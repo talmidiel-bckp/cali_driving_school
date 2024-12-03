@@ -1,5 +1,7 @@
 _G.Config = {
     DrawDistance = 10.0,
+    InteractDistance = 1.5,
+    InteractKey = {id = 38, name = 'E'},
 
     DrivingSchool = {
         Coordinates = {x = 239.471, y = -1380.960, z = 32.741},
@@ -31,4 +33,8 @@ _G.Config = {
             bScriptHostPed = false -- can't be targeted
         }
     }
+}
+
+_G.Messages = {
+    pedInteract = "appuyez sur [%s] pour parler au moniteur" -- touche d'interaction variable
 }

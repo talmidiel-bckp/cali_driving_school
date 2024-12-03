@@ -50,6 +50,14 @@ CreateThread(function ()
                 drivingSchoolMarker.Texture.name,
                 drivingSchoolMarker.DrawOnEnts
             )
+
+            if distanceFromSchool < _G.Config.InteractDistance then
+                ESX.ShowHelpNotification(string.format(_G.Messages.pedInteract, _G.Config.InteractKey.name))
+
+                if IsControlJustReleased(0, _G.Config.InteractKey.id) then
+                    print('key pressed')
+                end
+            end
         end
     end
 end)
