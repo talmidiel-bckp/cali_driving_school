@@ -21,8 +21,14 @@ _G.Config = {
             P19 = 2,
             Texture = {dict = nil, name = nil},
             DrawOnEnts = false
+        },
+
+        Ped = {
+            Model = 'a_m_m_bevhills_02',
+            Type = 4, --Civilian
+            Heading = 210.0,
+            isNetwork = false, -- false for static Npc
+            bScriptHostPed = false -- can't be targeted
         }
     }
 }
-
-print('config file loaded')
