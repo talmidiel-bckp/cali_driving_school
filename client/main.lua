@@ -1,4 +1,31 @@
 local drivingSchoolPos = _G.Config.DrivingSchool.Coordinates
+local currentTest = nil
+
+function OpenLicenseMenu()
+    local elements = {
+        {
+            unselectable = true,
+            title = "Auto École"
+        }
+    }
+
+    -- dynamically generate the elements
+    for key, value in pairs(_G.Config.Licenses) do
+        -- TODO: find a way to grey out the entry if player already has the license
+        -- maybe use disabled = true or unselectable = true
+        table.insert(elements, {title = value.menuName, description = value.price, value = value.name})
+    end
+
+    ESX.OpenContext(
+        'right',
+        elements,
+        function(menu, element) -- action if an entry is selected
+            --TODO: check if player have enough money
+            currentTest = element.value
+            print(string.format('%s selectioné', currentTest))
+            ESX.CloseContext()
+        end)
+end
 
 -- Create driving school blip
 CreateThread(function ()
@@ -55,7 +82,7 @@ CreateThread(function ()
                 ESX.ShowHelpNotification(string.format(_G.Messages.pedInteract, _G.Config.InteractKey.name))
 
                 if IsControlJustReleased(0, _G.Config.InteractKey.id) then
-                    print('key pressed')
+                    OpenLicenseMenu()
                 end
             end
         end

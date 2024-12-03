@@ -32,6 +32,12 @@ _G.Config = {
             isNetwork = false, -- false for static Npc
             bScriptHostPed = false -- can't be targeted
         }
+    },
+
+    Licenses = {
+        Car = {name = 'drive', menuName = 'permis voiture', price = 500, vehicle = 'blista'},
+        Bike = {name = 'drive_bike', menuName = 'permis moto', price = 500, vehicle = 'daemon'},
+        Truck = {name = 'drive_truck', menuName = 'permis poids lourds', price = 500, vehicle = 'mule3'}
     }
 }
 
