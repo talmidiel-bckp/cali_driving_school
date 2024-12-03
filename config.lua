@@ -11,13 +11,13 @@ _G.Config = {
         },
 
         Marker = {
-            Type = 20, -- MarkerTypeChevronUpx1
+            Type = 25, -- MarkerTypeHorizontalCircleSkinny
             Direction = {x = 0.0, y = 0.0, z = 0.0},
-            Color = {r = 0, g = 255, b = 0, a = 100}, -- Green
-            Rotation = {x = 1.0, y = 1.0, z = 0.0, rotate = true},
-            Scale = {x = 3.0, y = 0.5, z = 1.0},
-            Bobbing = true,
-            FaceCamera = true,
+            Color = {r = 0, g = 0, b = 0, a = 0}, -- Invisible
+            Rotation = {x = 0.0, y = 0.0, z = 0.0, rotate = false},
+            Scale = {x = 2.0, y = 2.0, z = 1.0},
+            Bobbing = false,
+            FaceCamera = false,
             P19 = 2,
             Texture = {dict = nil, name = nil},
             DrawOnEnts = false
