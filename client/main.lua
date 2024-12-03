@@ -17,6 +17,7 @@ end)
 -- Create driving school origin marker
 CreateThread(function ()
     while true do
+        Wait(0)
         local playerCoords = GetEntityCoords(PlayerPedId()) -- get current player coordinates
         local distanceFromSchool = #(playerCoords - vector3(drivingSchoolPos.x, drivingSchoolPos.y, drivingSchoolPos.z)) -- get distance from marker
 
