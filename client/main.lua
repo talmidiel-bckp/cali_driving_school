@@ -1,6 +1,7 @@
 local drivingSchoolPos = _G.Config.DrivingSchool.Coordinates
 local currentTest = nil
 
+-- Generate the driving school's menu
 function OpenLicenseMenu()
     local elements = {
         {
@@ -11,7 +12,7 @@ function OpenLicenseMenu()
 
     -- dynamically generate the elements
     for key, value in pairs(_G.Config.Licenses) do
-        -- TODO: put the licenses in correct order (current = truck, cer, bike)
+        -- TODO: put the licenses in correct order (current = random)
         -- TODO: find a way to grey out the entry if player already has the license
         -- maybe use disabled = true or unselectable = true
         table.insert(elements, {title = value.menuName, description = value.price .. '$', value = value.name, price = value.price})
