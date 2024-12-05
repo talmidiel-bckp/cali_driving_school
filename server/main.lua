@@ -5,7 +5,7 @@ ESX.RegisterServerCallback('cali_driving_school:playerHasEnoughMoney', function(
     if player.getAccount('bank').money >= price then
         player.removeAccountMoney('bank', price, string.format(_G.Messages.bankMessage, title))
         callback(true)
-    else if player.getAccount('money') >= price then
+    elseif player.getAccount('money').money >= price then
         player.removeAccountMoney('money', price)
         callback(true)
     else
