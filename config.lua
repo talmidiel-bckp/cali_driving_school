@@ -42,5 +42,8 @@ _G.Config = {
 }
 
 _G.Messages = {
-    pedInteract = "appuyez sur [%s] pour parler au moniteur" -- touche d'interaction variable
+    pedInteract = "appuyez sur [%s] pour parler au moniteur", -- touche d'interaction variable
+    notEnoughMoney = "vous n'avez pas les moyens pour passer le permis : %s (%s$)",
+    bankMessage = "auto école : %s.",
+    amountPaid = "vous avez payé %s$"
 }

@@ -14,17 +14,27 @@ function OpenLicenseMenu()
         -- TODO: put the licenses in correct order (current = truck, cer, bike)
         -- TODO: find a way to grey out the entry if player already has the license
         -- maybe use disabled = true or unselectable = true
-        table.insert(elements, {title = value.menuName, description = value.price .. '$', value = value.name})
+        table.insert(elements, {title = value.menuName, description = value.price .. '$', value = value.name, price = value.price})
     end
 
     ESX.OpenContext(
         'right',
         elements,
         function(menu, element) -- action if an entry is selected
-            --TODO: check if player have enough money
-            currentTest = element.value
-            print(string.format('%s selectioné', currentTest))
-            ESX.CloseContext()
+            -- return true and deduct the price from player's account if he have enough money
+            ESX.TriggerServerCallback('cali_driving_school:playerHasEnoughMoney', function(playerHasEnoughMoney)
+                if playerHasEnoughMoney then
+                    currentTest = element.value
+                    -- TODO: try to show notification on left of screen rather than top
+                    ESX.ShowNotification(string.format(_G.Messages.amountPaid, element.price))
+                    -- TODO: start the test
+                    ESX.CloseContext()
+                else
+                    -- TODO: try to show notification on left of screen rather than top
+                    ESX.ShowNotification(string.format(_G.Messages.notEnoughMoney, element.title, element.price))
+                    ESX.CloseContext()
+                end
+            end, element.price, element.title)
         end)
 end
 
