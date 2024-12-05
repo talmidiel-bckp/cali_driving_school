@@ -11,9 +11,10 @@ function OpenLicenseMenu()
 
     -- dynamically generate the elements
     for key, value in pairs(_G.Config.Licenses) do
+        -- TODO: put the licenses in correct order (current = truck, cer, bike)
         -- TODO: find a way to grey out the entry if player already has the license
         -- maybe use disabled = true or unselectable = true
-        table.insert(elements, {title = value.menuName, description = value.price, value = value.name})
+        table.insert(elements, {title = value.menuName, description = value.price .. '$', value = value.name})
     end
 
     ESX.OpenContext(
