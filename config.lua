@@ -52,5 +52,8 @@ _G.Messages = {
     pedInteract = "appuyez sur [%s] pour parler au moniteur", -- touche d'interaction variable
     notEnoughMoney = "vous n'avez pas les moyens pour passer le permis : %s (%s$)",
     bankMessage = "auto école : %s.",
-    amountPaid = "vous avez payé %s$"
+    amountPaid = "vous avez payé %s$",
+    wrongVehicle = "Veuillez retourner dans le vehicule de l'auto école pour poursuivre le test",
+    wrongVehicle2 = "le moniteur partiras sans vous dans %s secondes",
+    monitorLeft = "le moniteur est rentré sans vous !"
 }

@@ -1,6 +1,13 @@
 local drivingSchoolPos = _G.Config.DrivingSchool.Coordinates
 local currentTest = nil
 local testVehicle = nil
+local outsideVehicleTime = 0
+
+function resetLocals()
+    currentTest = nil
+    testVehicle = nil
+    outsideVehicleTime = 0
+end
 
 function StartDrivingTest()
     local model = GetHashKey(_G.Config.Licenses[currentTest].vehicle)
@@ -31,6 +38,13 @@ function StartDrivingTest()
     SetVehicleNumberPlateText(testVehicle, string.format(_G.Config.Vehicle.numberPlate, math.random(1000, 9999)))
     SetVehicleFuelLevel(testVehicle, 100.0)
     TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
+    CheckVehicle()
+end
+
+function EndDrivingTest(success, reason)
+    DeleteVehicle(testVehicle)
+    ESX.ShowNotification(reason)
+    resetLocals()
 end
 
 -- Generate the driving school's menu
@@ -76,6 +90,30 @@ AddEventHandler('cali_driving_school:startTest', function()
     StartDrivingTest()
     -- DrawCheckpoints
 end)
+
+function CheckVehicle() -- TODO: test this // find better name
+    CreateThread(function()
+        while currentTest do
+            local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+
+            if currentVehicle ~= testVehicle then
+                if outsideVehicleTime >= 45 & outsideVehicleTime < 60 then
+                    ESX.ShowNotification(string.format(_G.Messages.wrongVehicle2, 60 - outsideVehicleTime))
+                elseif outsideVehicleTime == 60 then
+                    EndDrivingTest(false, _G.Messages.monitorLeft)
+                else
+                    ESX.ShowNotification(_G.Messages.wrongVehicle)
+                end
+
+                outsideVehicleTime = outsideVehicleTime + 1
+            else
+                outsideVehicleTime = 0
+            end
+
+            Wait(1000)
+        end
+    end)
+end
 
 -- Create driving school blip
 CreateThread(function ()
