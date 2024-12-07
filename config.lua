@@ -30,7 +30,7 @@ _G.Config = {
             Type = 4, --Civilian
             Heading = 210.0,
             isNetwork = false, -- false for static Npc
-            bScriptHostPed = false -- can't be targeted
+            bScriptHostPed = false -- hosted locally
         }
     },
 
