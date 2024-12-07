@@ -9,7 +9,7 @@ _G.Config = {
         Blip = {
             Sprite = 782, -- radar_test_car
             Color = 0, -- White
-            Display = 6 -- Main AND Mini map
+            Display = 4 -- Main AND Mini map, non-sticky
         },
 
         Marker = {
