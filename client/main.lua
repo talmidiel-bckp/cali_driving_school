@@ -1,5 +1,37 @@
 local drivingSchoolPos = _G.Config.DrivingSchool.Coordinates
 local currentTest = nil
+local testVehicle = nil
+
+function StartDrivingTest()
+    local model = GetHashKey(_G.Config.Licenses[currentTest].vehicle)
+    local vehicleSpawnCoords = _G.Config.Vehicle.SpawnCoords
+
+    -- TODO: check if a vehicle is blocking the spawn point
+
+    RequestModel(model)
+    while not HasModelLoaded(model) do -- wait for the model to load before going further
+        Wait(100)
+    end
+
+    if testVehicle then
+        DeleteVehicle(testVehicle)
+    end
+
+    testVehicle = CreateVehicle(
+        model,
+        vehicleSpawnCoords.x,
+        vehicleSpawnCoords.y,
+        vehicleSpawnCoords.z,
+        vehicleSpawnCoords.heading,
+        _G.Config.Vehicle.isNetwork,
+        _G.Config.Vehicle.netMissionEntity
+    )
+
+    math.randomseed(GetGameTimer())
+    SetVehicleNumberPlateText(testVehicle, string.format(_G.Config.Vehicle.numberPlate, math.random(1000, 9999)))
+    SetVehicleFuelLevel(testVehicle, 100.0)
+    TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
+end
 
 -- Generate the driving school's menu
 function OpenLicenseMenu()
@@ -15,7 +47,7 @@ function OpenLicenseMenu()
         -- TODO: put the licenses in correct order (current = random)
         -- TODO: find a way to grey out the entry if player already has the license
         -- maybe use disabled = true or unselectable = true
-        table.insert(elements, {title = value.menuName, description = value.price .. '$', value = value.name, price = value.price})
+        table.insert(elements, {title = value.menuName, description = value.price .. '$', value = value.name, price = value.price, key = key})
     end
 
     ESX.OpenContext(
@@ -25,11 +57,11 @@ function OpenLicenseMenu()
             -- return true and deduct the price from player's account if he have enough money
             ESX.TriggerServerCallback('cali_driving_school:playerHasEnoughMoney', function(playerHasEnoughMoney)
                 if playerHasEnoughMoney then
-                    currentTest = element.value
+                    currentTest = element.key
                     -- TODO: try to show notification on left of screen rather than top
                     ESX.ShowNotification(string.format(_G.Messages.amountPaid, element.price))
-                    -- TODO: start the test
                     ESX.CloseContext()
+                    StartDrivingTest()
                 else
                     -- TODO: try to show notification on left of screen rather than top
                     ESX.ShowNotification(string.format(_G.Messages.notEnoughMoney, element.title, element.price))
@@ -38,6 +70,12 @@ function OpenLicenseMenu()
             end, element.price, element.title)
         end)
 end
+
+RegisterNetEvent('cali_driving_school:startTest')
+AddEventHandler('cali_driving_school:startTest', function()
+    StartDrivingTest()
+    -- DrawCheckpoints
+end)
 
 -- Create driving school blip
 CreateThread(function ()

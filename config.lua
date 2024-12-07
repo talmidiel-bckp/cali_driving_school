@@ -28,7 +28,7 @@ _G.Config = {
         Ped = {
             Model = 'a_m_m_bevhills_02',
             Type = 4, --Civilian
-            Heading = 210.0,
+            Heading = 139.0,
             isNetwork = false, -- false for static Npc
             bScriptHostPed = false -- hosted locally
         }
@@ -38,6 +38,13 @@ _G.Config = {
         Car = {name = 'drive', menuName = 'permis voiture', price = 500, vehicle = 'blista'},
         Bike = {name = 'drive_bike', menuName = 'permis moto', price = 500, vehicle = 'daemon'},
         Truck = {name = 'drive_truck', menuName = 'permis poids lourds', price = 500, vehicle = 'mule3'}
+    },
+
+    Vehicle = {
+        SpawnCoords = {x = 223.068, y = -1387.859, z = 30.358, heading = 269.0},
+        isNetwork = true, -- avoid other players seeing someone floating
+        netMissionEntity = false, -- no need to keep the vehicle across multiple sessions
+        numberPlate = "ECOL%s"
     }
 }
 
