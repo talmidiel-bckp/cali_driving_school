@@ -66,10 +66,9 @@ function OpenLicenseMenu()
 
     -- dynamically generate the elements
     for key, value in pairs(_G.Config.Licenses) do
-        -- TODO: put the licenses in correct order (current = random)
         -- TODO: find a way to grey out the entry if player already has the license
         -- maybe use disabled = true or unselectable = true
-        table.insert(elements, {title = value.menuName, description = value.price .. '$', price = value.price, key = key, order = value.order}) -- TODO: refactor this (useless params)
+        table.insert(elements, {title = value.menuName, description = value.price .. '$', price = value.price, key = key, order = value.order})
     end
 
     table.sort(elements, function(a, b)
