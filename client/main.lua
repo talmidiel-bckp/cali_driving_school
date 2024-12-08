@@ -170,8 +170,9 @@ function DrawCheckpoints()
     end)
 end
 
-function CheckCurrentVehicle() -- TODO: add a sleep at start ?
+function CheckCurrentVehicle()
     CreateThread(function()
+        Wait(2000) -- Supposed to solve the mesage as soon as test starts bug
         while currentTest do
             local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
 
