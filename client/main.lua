@@ -1,10 +1,11 @@
 local drivingSchoolPos = _G.Config.DrivingSchool.Coordinates
 local currentTest = nil -- name of the currently taken test (Car, Truck, Bike)
-local testVehicle = nil -- current driveing school vehicle
-local outsideVehicleTime = 0 -- time spentoutside the driving school vehicle (in seconds)
+local testVehicle = nil -- current driving school vehicle
+local outsideVehicleTime = 0 -- time spent outside the driving school vehicle (in seconds)
 local currentCheckpoint = 1
 local currentBlip = nil
 
+-- Handles the logic for starting the driving test
 function StartDrivingTest()
     local model = GetHashKey(_G.Config.Licenses[currentTest].vehicle)
     local vehicleSpawnCoords = _G.Config.Vehicle.SpawnCoords
@@ -37,6 +38,7 @@ function StartDrivingTest()
     CheckCurrentVehicle()
 end
 
+-- Handles the logic after the test is done
 function EndDrivingTest(success, message)
     DeleteVehicle(testVehicle)
     ESX.ShowNotification(message)
@@ -91,6 +93,7 @@ function OpenLicenseMenu()
         end)
 end
 
+-- TODO: merge with driving school blip and maybe move to an utils file ?
 function CreateCheckpointBlip(coords)
     local blipConfig = _G.Config.Checkpoints.Blip
     currentBlip = AddBlipForCoord(coords.x, coords.y, coords.z)
@@ -147,7 +150,7 @@ function DrawCheckpoints()
             )
 
             local distanceFromCheckpoint = #(playerCoords - vector3(checkpoint.Pos.x, checkpoint.Pos.y, checkpoint.Pos.z))
-            if distanceFromCheckpoint <= _G.Config.Checkpoints.validationDistance then
+            if distanceFromCheckpoint <= _G.Config.Checkpoints.validationDistance then -- TODO: check if the vehicle is the school one
                 if checkpoint.Message then
                     ESX.ShowNotification(checkpoint.Message)
                 end
@@ -170,6 +173,7 @@ function DrawCheckpoints()
     end)
 end
 
+-- Handles the player's leaving the driving school vehicle
 function CheckCurrentVehicle()
     CreateThread(function()
         Wait(2000) -- Supposed to solve the mesage as soon as test starts bug
