@@ -267,13 +267,11 @@ CreateThread(function ()
     local pedConfig = _G.Config.DrivingSchool.Ped
     local modelHash = GetHashKey(pedConfig.Model)
 
-    -- load the model before spawning it
     RequestModel(modelHash)
     while not HasModelLoaded(modelHash) do
         Wait(100) -- make sure the model is loaded before moving forward
     end
 
-    -- create the and spawn the npc
     local npcPed = CreatePed(
         pedConfig.Type,
         modelHash,
@@ -285,7 +283,6 @@ CreateThread(function ()
         pedConfig.bScriptHostPed
     )
 
-    -- Set NPC properties
     SetEntityInvincible(npcPed, true) -- Make NPC invincible
     SetBlockingOfNonTemporaryEvents(npcPed, true) -- Prevent reactions
     FreezeEntityPosition(npcPed, true) -- Prevent movement
