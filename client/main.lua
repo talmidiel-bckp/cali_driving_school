@@ -32,9 +32,10 @@ function StartDrivingTest()
     )
 
     math.randomseed(GetGameTimer())
-    SetVehicleNumberPlateText(testVehicle, string.format(_G.Config.Vehicle.numberPlate, math.random(1000, 9999)))
+    SetVehicleNumberPlateText(testVehicle, _G.Config.Vehicle.numberPlate)
     SetVehicleFuelLevel(testVehicle, 100.0)
     TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
+    SetModelAsNoLongerNeeded(model) -- free up some memory
     CheckCurrentVehicle()
 end
 

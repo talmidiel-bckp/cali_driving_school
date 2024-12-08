@@ -50,7 +50,7 @@ _G.Config = {
         SpawnCoords = {x = 223.068, y = -1387.859, z = 30.358, heading = 269.0},
         isNetwork = true, -- avoid other players seeing someone floating
         netMissionEntity = false, -- no need to keep the vehicle across multiple sessions
-        numberPlate = "ECOL%s"
+        numberPlate = string.format("ECOL%s", math.random(1000, 9999))
     },
 
     Checkpoints = {
