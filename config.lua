@@ -41,9 +41,9 @@ _G.Config = {
     },
 
     Licenses = {
-        Car = {name = 'drive', menuName = 'permis voiture', price = 500, vehicle = 'blista'},
-        Bike = {name = 'drive_bike', menuName = 'permis moto', price = 500, vehicle = 'daemon'},
-        Truck = {name = 'drive_truck', menuName = 'permis poids lourds', price = 500, vehicle = 'mule3'}
+        Car = {name = 'drive', menuName = 'permis voiture', price = 500, vehicle = 'blista', order = 1},
+        Bike = {name = 'drive_bike', menuName = 'permis moto', price = 500, vehicle = 'daemon', order = 2},
+        Truck = {name = 'drive_truck', menuName = 'permis poids lourds', price = 500, vehicle = 'mule3', order = 3}
     },
 
     Vehicle = {

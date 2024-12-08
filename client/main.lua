@@ -59,7 +59,8 @@ function OpenLicenseMenu()
     local elements = {
         {
             unselectable = true,
-            title = "Auto École"
+            title = "Auto École",
+            order = 0
         }
     }
 
@@ -68,8 +69,12 @@ function OpenLicenseMenu()
         -- TODO: put the licenses in correct order (current = random)
         -- TODO: find a way to grey out the entry if player already has the license
         -- maybe use disabled = true or unselectable = true
-        table.insert(elements, {title = value.menuName, description = value.price .. '$', value = value.name, price = value.price, key = key}) -- TODO: refactor this (useless params)
+        table.insert(elements, {title = value.menuName, description = value.price .. '$', price = value.price, key = key, order = value.order}) -- TODO: refactor this (useless params)
     end
+
+    table.sort(elements, function(a, b)
+        return a.order < b.order
+    end)
 
     ESX.OpenContext(
         'right',
