@@ -163,7 +163,7 @@ CreateThread(function ()
                 drivingSchoolMarker.DrawOnEnts
             )
 
-            if distanceFromSchool < _G.Config.InteractDistance then
+            if distanceFromSchool < _G.Config.InteractDistance and not currentTest then
                 ESX.ShowHelpNotification(string.format(_G.Messages.pedInteract, _G.Config.InteractKey.name))
 
                 if IsControlJustReleased(0, _G.Config.InteractKey.id) then
