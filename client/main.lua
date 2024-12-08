@@ -1,13 +1,7 @@
 local drivingSchoolPos = _G.Config.DrivingSchool.Coordinates
-local currentTest = nil
-local testVehicle = nil
-local outsideVehicleTime = 0
-
-function resetLocals()
-    currentTest = nil
-    testVehicle = nil
-    outsideVehicleTime = 0
-end
+local currentTest = nil -- name of the currently taken test (Car, Truck, Bike)
+local testVehicle = nil -- current driveing school vehicle
+local outsideVehicleTime = 0 -- time spentoutside the driving school vehicle (in seconds)
 
 function StartDrivingTest()
     local model = GetHashKey(_G.Config.Licenses[currentTest].vehicle)
@@ -38,13 +32,16 @@ function StartDrivingTest()
     SetVehicleNumberPlateText(testVehicle, string.format(_G.Config.Vehicle.numberPlate, math.random(1000, 9999)))
     SetVehicleFuelLevel(testVehicle, 100.0)
     TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
-    CheckVehicle()
+    CheckCurrentVehicle()
 end
 
 function EndDrivingTest(success, reason)
     DeleteVehicle(testVehicle)
     ESX.ShowNotification(reason)
-    resetLocals()
+
+    currentTest = nil
+    testVehicle = nil
+    outsideVehicleTime = 0
 end
 
 -- Generate the driving school's menu
@@ -91,13 +88,13 @@ AddEventHandler('cali_driving_school:startTest', function()
     -- DrawCheckpoints
 end)
 
-function CheckVehicle() -- TODO: test this // find better name
+function CheckCurrentVehicle()
     CreateThread(function()
         while currentTest do
             local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
 
             if currentVehicle ~= testVehicle then
-                if outsideVehicleTime >= 45 & outsideVehicleTime < 60 then
+                if outsideVehicleTime >= 45 and outsideVehicleTime < 60 then
                     ESX.ShowNotification(string.format(_G.Messages.wrongVehicle2, 60 - outsideVehicleTime))
                 elseif outsideVehicleTime == 60 then
                     EndDrivingTest(false, _G.Messages.monitorLeft)
@@ -105,12 +102,12 @@ function CheckVehicle() -- TODO: test this // find better name
                     ESX.ShowNotification(_G.Messages.wrongVehicle)
                 end
 
-                outsideVehicleTime = outsideVehicleTime + 1
+                outsideVehicleTime = outsideVehicleTime + 5
             else
                 outsideVehicleTime = 0
             end
 
-            Wait(1000)
+            Wait(5000)
         end
     end)
 end
