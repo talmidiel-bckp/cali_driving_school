@@ -2,6 +2,8 @@ local drivingSchoolPos = _G.Config.DrivingSchool.Coordinates
 local currentTest = nil -- name of the currently taken test (Car, Truck, Bike)
 local testVehicle = nil -- current driveing school vehicle
 local outsideVehicleTime = 0 -- time spentoutside the driving school vehicle (in seconds)
+local currentCheckpoint = 1
+local currentBlip = nil
 
 function StartDrivingTest()
     local model = GetHashKey(_G.Config.Licenses[currentTest].vehicle)
@@ -35,13 +37,18 @@ function StartDrivingTest()
     CheckCurrentVehicle()
 end
 
-function EndDrivingTest(success, reason)
+function EndDrivingTest(success, message)
     DeleteVehicle(testVehicle)
-    ESX.ShowNotification(reason)
+    ESX.ShowNotification(message)
+
+    -- TODO: give license to player if success
 
     currentTest = nil
     testVehicle = nil
     outsideVehicleTime = 0
+    currentCheckpoint = 1
+    LastCheckPoint = -1
+    currentBlip = nil
 end
 
 -- Generate the driving school's menu
@@ -58,7 +65,7 @@ function OpenLicenseMenu()
         -- TODO: put the licenses in correct order (current = random)
         -- TODO: find a way to grey out the entry if player already has the license
         -- maybe use disabled = true or unselectable = true
-        table.insert(elements, {title = value.menuName, description = value.price .. '$', value = value.name, price = value.price, key = key})
+        table.insert(elements, {title = value.menuName, description = value.price .. '$', value = value.name, price = value.price, key = key}) -- TODO: refactor this (useless params)
     end
 
     ESX.OpenContext(
@@ -69,10 +76,12 @@ function OpenLicenseMenu()
             ESX.TriggerServerCallback('cali_driving_school:playerHasEnoughMoney', function(playerHasEnoughMoney)
                 if playerHasEnoughMoney then
                     currentTest = element.key
-                    -- TODO: try to show notification on left of screen rather than top
-                    ESX.ShowNotification(string.format(_G.Messages.amountPaid, element.price))
                     ESX.CloseContext()
-                    StartDrivingTest()
+                    TriggerEvent('cali_driving_school:startTest')
+
+                    Wait(2000) -- TODO: Move this to a more appropriate place
+                    -- TODO: try to show notification on left of screen rather than top
+                    ESX.ShowNotification(string.format(_G.Messages.startMessage, element.price))
                 else
                     -- TODO: try to show notification on left of screen rather than top
                     ESX.ShowNotification(string.format(_G.Messages.notEnoughMoney, element.title, element.price))
@@ -82,13 +91,86 @@ function OpenLicenseMenu()
         end)
 end
 
+function CreateCheckpointBlip(coords)
+    local blipConfig = _G.Config.Checkpoints.Blip
+    currentBlip = AddBlipForCoord(coords.x, coords.y, coords.z)
+
+    SetBlipSprite(currentBlip, blipConfig.Sprite)
+    SetBlipColour(currentBlip, blipConfig.Color)
+    SetBlipRoute(currentBlip, blipConfig.Route)
+    SetBlipScale(currentBlip, blipConfig.Scale)
+end
+
 RegisterNetEvent('cali_driving_school:startTest')
 AddEventHandler('cali_driving_school:startTest', function()
     StartDrivingTest()
-    -- DrawCheckpoints
+    DrawCheckpoints()
 end)
 
-function CheckCurrentVehicle()
+-- Draw the checkpoints markers, blips, and messages
+function DrawCheckpoints()
+    local checkpoints = _G.Config.Checkpoints[currentTest]
+    local checkpointMarker = _G.Config.Checkpoints.Marker
+
+    CreateThread(function()
+        CreateCheckpointBlip(checkpoints[currentCheckpoint].Pos)
+
+        while currentCheckpoint <= #checkpoints do
+            local playerCoords = GetEntityCoords(PlayerPedId())
+            local checkpoint = checkpoints[currentCheckpoint]
+
+            DrawMarker(
+                checkpointMarker.Type,
+                checkpoint.Pos.x,
+                checkpoint.Pos.y,
+                checkpoint.Pos.z,
+                checkpointMarker.Direction.x,
+                checkpointMarker.Direction.y,
+                checkpointMarker.Direction.z,
+                checkpointMarker.Rotation.x,
+                checkpointMarker.Rotation.y,
+                checkpointMarker.Rotation.z,
+                checkpointMarker.Scale.x,
+                checkpointMarker.Scale.y,
+                checkpointMarker.Scale.z,
+                checkpointMarker.Color.r,
+                checkpointMarker.Color.g,
+                checkpointMarker.Color.b,
+                checkpointMarker.Color.a,
+                checkpointMarker.Bobbing,
+                checkpointMarker.FaceCamera,
+                checkpointMarker.P19,
+                checkpointMarker.Rotation.rotate,
+                checkpointMarker.Texture.dict,
+                checkpointMarker.Texture.name,
+                checkpointMarker.DrawOnEnts
+            )
+
+            local distanceFromCheckpoint = #(playerCoords - vector3(checkpoint.Pos.x, checkpoint.Pos.y, checkpoint.Pos.z))
+            if distanceFromCheckpoint <= _G.Config.Checkpoints.validationDistance then
+                if checkpoint.Message then
+                    ESX.ShowNotification(checkpoint.Message)
+                end
+
+                currentCheckpoint = currentCheckpoint + 1
+                checkpoint = checkpoints[currentCheckpoint]
+
+                RemoveBlip(currentBlip)
+                if currentCheckpoint <= #checkpoints then
+                    CreateCheckpointBlip(checkpoint.Pos)
+                end
+
+                -- TODO: check if last checkpoint, is a vehicle present on the spot
+            end
+
+            Wait(0)
+        end
+
+        EndDrivingTest(true, string.format(_G.Messages.testSucess, _G.Config.Licenses[currentTest].menuName))
+    end)
+end
+
+function CheckCurrentVehicle() -- TODO: add a sleep at start ?
     CreateThread(function()
         while currentTest do
             local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
