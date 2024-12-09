@@ -44,6 +44,10 @@ function EndDrivingTest(success, message)
     DeleteVehicle(testVehicle)
     ESX.ShowNotification(message)
 
+    if DoesBlipExist(currentBlip) then
+        RemoveBlip(currentBlip)
+    end
+
     -- TODO: give license to player if success
 
     currentTest = nil
