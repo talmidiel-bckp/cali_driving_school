@@ -4,6 +4,7 @@ local testVehicle = nil -- current driving school vehicle
 local outsideVehicleTime = 0 -- time spent outside the driving school vehicle (in seconds)
 local currentCheckpoint = 1
 local currentBlip = nil
+local isLastCheckPoint = false
 
 -- Handles the logic for starting the driving test
 function StartDrivingTest()
@@ -91,10 +92,8 @@ function OpenLicenseMenu()
                     TriggerEvent('cali_driving_school:startTest')
 
                     Wait(2000) -- TODO: Move this to a more appropriate place
-                    -- TODO: try to show notification on left of screen rather than top
                     ESX.ShowNotification(string.format(_G.Messages.startMessage, element.price))
                 else
-                    -- TODO: try to show notification on left of screen rather than top
                     ESX.ShowNotification(string.format(_G.Messages.notEnoughMoney, element.title, element.price))
                     ESX.CloseContext()
                 end
@@ -173,10 +172,17 @@ function DrawCheckpoints()
                 end
 
                 -- TODO: check if last checkpoint, is a vehicle present on the spot
-                -- TODO: if last checkpoint, let the plater get out of the vehicle before finishing
             end
 
             Wait(0)
+        end
+
+        local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+        isLastCheckPoint = true -- Stop the CheckCurrentVehicle thread.
+
+        while currentVehicle == testVehicle do
+            currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+            Wait(1000)
         end
 
         EndDrivingTest(true, string.format(_G.Messages.testSucess, _G.Config.Licenses[currentTest].menuName))
@@ -187,7 +193,7 @@ end
 function CheckCurrentVehicle()
     CreateThread(function()
         Wait(2000) -- Supposed to solve the mesage as soon as test starts bug
-        while currentTest do
+        while currentTest and not isLastCheckPoint do
             local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
 
             if currentVehicle ~= testVehicle then
