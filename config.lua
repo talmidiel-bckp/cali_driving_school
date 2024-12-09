@@ -2,11 +2,14 @@ _G.Config = {
     DrawDistance = 10.0,
     InteractDistance = 1.5,
     InteractKey = {id = 38, name = 'E'},
+    MaxErrors = 3,
+    MonitoringInterval = 1000, -- interval for monitoring speed and damage
+    MonitoringCooldown = 3000, -- cooldown to let player reduce it's speed
 
     SpeedLimits = {
         Town = 90,
         Outskirts = 120,
-        Freeway = "Illimitée"
+        Freeway = 9999
     },
 
     DrivingSchool = {
@@ -15,7 +18,7 @@ _G.Config = {
         Blip = {
             Sprite = 782, -- radar_test_car
             Color = 0, -- White
-            Display = 4 -- Main AND Mini map, non-sticky
+            Display = 4 -- Main AND Mini map, non-sticky -- TODO: fix this stupid thing still being sticky
         },
 
         Marker = {
@@ -80,22 +83,23 @@ _G.Config = {
         Car = {
             {
                 Pos = {x = 213.006, y = -1417.160, z = 28.824},
-                Message = "Insérez vous sur la voie de droite, puis tournez a droite.",
+                Message = "Insérez vous sur la voie de droite, puis tournez a droite. Limite : %skm/h",
                 Zone = 'Town'
             },
+            --[[
             {
                 Pos = {x = 181.687, y = -1396.153, z = 28.824},
-                Message = "Bien ! nous allons continuer tout droit. Attention, en ville la vitesse est limitée !",
+                Message = "Bien ! nous allons continuer tout droit. Attention, en ville la vitesse est limitée ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 218.716, y = -1090.588, z = 28.858},
-                Message = "Attention ce carrefour est trés fréquenté !",
+                Message = "Attention ce carrefour est trés fréquenté ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 463.560, y = -510.830, z = 27.797},
-                Message = "Nous allons rentrer sur l'autoroute, la vitesse n'est pas limitée.",
+                Message = "Nous allons rentrer sur l'autoroute, la vitesse n'est plus limitée.",
                 Zone = 'Freeway'
             },
             {
@@ -105,47 +109,48 @@ _G.Config = {
             },
             {
                 Pos = {x = 1118.070, y = 362.650, z = 91.219},
-                Message = "Tournez a gauche. Attention, en periphérie la vitesse est limitée !",
+                Message = "Tournez a gauche. Attention, en periphérie la vitesse est limitée ! Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 1044.659, y = 474.791, z = 94.168},
-                Message = "Tournez a droite, puis prenez a gauche.",
+                Message = "Tournez a droite, puis prenez a gauche. Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 1116.870, y = 616.338, z = 109.788},
-                Message = "Attention au virages dangereux sur cette route !",
+                Message = "Attention au virages dangereux sur cette route ! Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 453.032, y = 879.784, z = 197.929},
-                Message = "Prenez le chemin a gauche.",
+                Message = "Prenez le chemin a gauche. Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 302.030, y = 845.406, z = 192.891},
-                Message = "Tournez a gauche. Attention, nous allons rentrer en ville !",
+                Message = "Tournez a gauche. Attention, nous allons rentrer en ville ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 237.942, y = 467.024, z = 124.245},
-                Message = "Tourner legérement a gauche pour continuer tout droit.",
+                Message = "Tourner legérement a gauche pour continuer tout droit. Limite : %skm/h",
                 Zone = "Town"
             },
             {
                 Pos = {x = -213.600, y = -936.290, z = 29.128},
-                Message = "Préparez vous, nous allons prendre la prochaine a gauche.",
+                Message = "Préparez vous, nous allons prendre la prochaine a gauche. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 4.074, y = -1144.166, z = 28.201},
-                Message = "Tournez a droite.",
+                Message = "Tournez a droite. Limite : %skm/h",
                 Zone = 'Town'
             },
+            --]]
             {
                 Pos = {x = 193.081, y = -1423.674, z = 29.161},
-                Message = "Faites demi-tour un peu plus loin avant de rentrez dans l'auto école.",
+                Message = "Faites demi-tour un peu plus loin avant de rentrez dans l'auto école. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
@@ -154,30 +159,30 @@ _G.Config = {
                 Zone = 'Town'
             },
             {
-                Pos = {x = 240.758, y = -1413.740, z = 29.391},
-                Message = "Soretez du vehicule pour valider le test !",
+                Pos = {x = 240.758, y = -1413.740, z = 30.391},
+                Message = "Sortez du vehicule pour valider le test !",
                 Zone = 'Town'
             }
         },
         Bike = {
             {
                 Pos = {x = 213.006, y = -1417.160, z = 28.824},
-                Message = "Insérez vous sur la voie de droite, puis tournez a droite.",
+                Message = "Insérez vous sur la voie de droite, puis tournez a droite. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 181.687, y = -1396.153, z = 28.824},
-                Message = "Bien ! nous allons continuer tout droit. Attention, en ville la vitesse est limitée !",
+                Message = "Bien ! nous allons continuer tout droit. Attention, en ville la vitesse est limitée ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 218.716, y = -1090.588, z = 28.858},
-                Message = "Attention ce carrefour est trés fréquenté !",
+                Message = "Attention ce carrefour est trés fréquenté ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 463.560, y = -510.830, z = 27.797},
-                Message = "Nous allons rentrer sur l'autoroute, la vitesse n'est pas limitée.",
+                Message = "Nous allons rentrer sur l'autoroute, la vitesse n'est plus limitée.",
                 Zone = 'Freeway'
             },
             {
@@ -187,47 +192,47 @@ _G.Config = {
             },
             {
                 Pos = {x = 1118.070, y = 362.650, z = 91.219},
-                Message = "Tournez a gauche. Attention, en periphérie la vitesse est limitée !",
+                Message = "Tournez a gauche. Attention, en periphérie la vitesse est limitée ! Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 1044.659, y = 474.791, z = 94.168},
-                Message = "Tournez a droite, puis prenez a gauche.",
+                Message = "Tournez a droite, puis prenez a gauche. Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 1116.870, y = 616.338, z = 109.788},
-                Message = "Attention au virages dangereux sur cette route !",
+                Message = "Attention au virages dangereux sur cette route ! Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 453.032, y = 879.784, z = 197.929},
-                Message = "Prenez le chemin a gauche.",
+                Message = "Prenez le chemin a gauche. Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 302.030, y = 845.406, z = 192.891},
-                Message = "Tournez a gauche. Attention, nous allons rentrer en ville !",
+                Message = "Tournez a gauche. Attention, nous allons rentrer en ville ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 237.942, y = 467.024, z = 124.245},
-                Message = "Tourner legérement a gauche pour continuer tout droit.",
+                Message = "Tourner legérement a gauche pour continuer tout droit. Limite : %skm/h",
                 Zone = "Town"
             },
             {
                 Pos = {x = -213.600, y = -936.290, z = 29.128},
-                Message = "Préparez vous, nous allons prendre la prochaine a gauche.",
+                Message = "Préparez vous, nous allons prendre la prochaine a gauche. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 4.074, y = -1144.166, z = 28.201},
-                Message = "Tournez a droite.",
+                Message = "Tournez a droite. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 193.081, y = -1423.674, z = 29.161},
-                Message = "Faites demi-tour un peu plus loin avant de rentrez dans l'auto école.",
+                Message = "Faites demi-tour un peu plus loin avant de rentrez dans l'auto école. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
@@ -236,30 +241,30 @@ _G.Config = {
                 Zone = 'Town'
             },
             {
-                Pos = {x = 240.758, y = -1413.740, z = 29.391},
-                Message = "Soretez du vehicule pour valider le test !",
+                Pos = {x = 240.758, y = -1413.740, z = 30.391},
+                Message = "Sortez du vehicule pour valider le test !",
                 Zone = 'Town'
             }
         },
         Truck = {
             {
                 Pos = {x = 213.006, y = -1417.160, z = 28.824},
-                Message = "Insérez vous sur la voie de droite, puis tournez a droite.",
+                Message = "Insérez vous sur la voie de droite, puis tournez a droite. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 181.687, y = -1396.153, z = 28.824},
-                Message = "Bien ! nous allons continuer tout droit. Attention, en ville la vitesse est limitée !",
+                Message = "Bien ! nous allons continuer tout droit. Attention, en ville la vitesse est limitée ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 218.716, y = -1090.588, z = 28.858},
-                Message = "Attention ce carrefour est trés fréquenté !",
+                Message = "Attention ce carrefour est trés fréquenté ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 463.560, y = -510.830, z = 27.797},
-                Message = "Nous allons rentrer sur l'autoroute, la vitesse n'est pas limitée.",
+                Message = "Nous allons rentrer sur l'autoroute, la vitesse n'est plus limitée.",
                 Zone = 'Freeway'
             },
             {
@@ -269,47 +274,47 @@ _G.Config = {
             },
             {
                 Pos = {x = 1118.070, y = 362.650, z = 91.219},
-                Message = "Tournez a gauche. Attention, en periphérie la vitesse est limitée !",
+                Message = "Tournez a gauche. Attention, en periphérie la vitesse est limitée ! Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 1044.659, y = 474.791, z = 94.168},
-                Message = "Tournez a droite, puis prenez a gauche.",
+                Message = "Tournez a droite, puis prenez a gauche. Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 1116.870, y = 616.338, z = 109.788},
-                Message = "Attention au virages dangereux sur cette route !",
+                Message = "Attention au virages dangereux sur cette route ! Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 453.032, y = 879.784, z = 197.929},
-                Message = "Prenez le chemin a gauche.",
+                Message = "Prenez le chemin a gauche. Limite : %skm/h",
                 Zone = 'Outskirts'
             },
             {
                 Pos = {x = 302.030, y = 845.406, z = 192.891},
-                Message = "Tournez a gauche. Attention, nous allons rentrer en ville !",
+                Message = "Tournez a gauche. Attention, nous allons rentrer en ville ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 237.942, y = 467.024, z = 124.245},
-                Message = "Tourner legérement a gauche pour continuer tout droit.",
+                Message = "Tourner legérement a gauche pour continuer tout droit. Limite : %skm/h",
                 Zone = "Town"
             },
             {
                 Pos = {x = -213.600, y = -936.290, z = 29.128},
-                Message = "Préparez vous, nous allons prendre la prochaine a gauche.",
+                Message = "Préparez vous, nous allons prendre la prochaine a gauche. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 4.074, y = -1144.166, z = 28.201},
-                Message = "Tournez a droite.",
+                Message = "Tournez a droite. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
                 Pos = {x = 193.081, y = -1423.674, z = 29.161},
-                Message = "Faites demi-tour un peu plus loin avant de rentrez dans l'auto école.",
+                Message = "Faites demi-tour un peu plus loin avant de rentrez dans l'auto école. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
@@ -318,8 +323,8 @@ _G.Config = {
                 Zone = 'Town'
             },
             {
-                Pos = {x = 240.758, y = -1413.740, z = 29.391},
-                Message = "Soretez du vehicule pour valider le test !",
+                Pos = {x = 240.758, y = -1413.740, z = 30.391},
+                Message = "Sortez du vehicule pour valider le test !",
                 Zone = 'Town'
             }
         }
@@ -334,5 +339,8 @@ _G.Messages = {
     wrongVehicle2 = "le moniteur partiras sans vous dans %s secondes",
     monitorLeft = "le moniteur est rentré sans vous !",
     testSucess = "Félicitations, vous avez réussi votre %s",
-    startMessage = "Sortez de l'auto école et prenez a droite"
+    startMessage = "Sortez de l'auto école et prenez a droite",
+    ownedLicense = 'Vous possedez déjà ce permis !',
+    speeding = "Attention a votre vitesse ! pour rappella limite est de %skm/h. Erreurs : %s/%s", -- speedLimit, driveErrors, maxErrors
+    tooManyErrors = "vous avez fait trop d'erreurs. réessayez plus tard !"
 }

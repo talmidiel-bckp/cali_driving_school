@@ -5,6 +5,8 @@ local outsideVehicleTime = 0 -- time spent outside the driving school vehicle (i
 local currentCheckpoint = 1
 local currentBlip = nil
 local ownedLicense = {}
+local driveErrors = 0
+local currentZone = nil
 
 local monitoring = {
     vehicle = false,
@@ -37,36 +39,55 @@ function StartDrivingTest()
         _G.Config.Vehicle.isNetwork,
         _G.Config.Vehicle.netMissionEntity
     )
+    currentZone = 'Town'
 
     math.randomseed(GetGameTimer())
     SetVehicleNumberPlateText(testVehicle, _G.Config.Vehicle.numberPlate)
     SetVehicleFuelLevel(testVehicle, 100.0)
     TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
     SetModelAsNoLongerNeeded(model) -- free up some memory
-    StartMonitoringVehicle()
 end
 
 -- Handles the logic after the test is done
 function EndDrivingTest(success, message)
-    DeleteVehicle(testVehicle)
+    if success then
+        TriggerServerEvent('cali_driving_school:addLicense', _G.Config.Licenses[currentTest].name)
+    else
+        local schoolCoordinates = _G.Config.Vehicle.SpawnCoords
+        SetEntityCoords(PlayerPedId(), schoolCoordinates.x, schoolCoordinates.y, schoolCoordinates.z, false, false, false, true)
+    end
+
+    ESX.ShowNotification(message)
+
+    -- Post test cleanup
+    if testVehicle then
+        DeleteVehicle(testVehicle)
+        testVehicle = nil
+    end
 
     if DoesBlipExist(currentBlip) then
         RemoveBlip(currentBlip)
     end
 
-    if success then
-        TriggerServerEvent('cali_driving_school:addLicense', _G.Config.Licenses[currentTest].name)
-    end
-
-    ESX.ShowNotification(message)
-
     currentTest = nil
-    testVehicle = nil
     outsideVehicleTime = 0
     currentCheckpoint = 1
     currentBlip = nil
+    driveErrors = 0
+    currentZone = nil
 
     StopMonitoring()
+end
+
+function StartMonitoring()
+    monitoring = {
+        vehicle = true,
+        speed = true,
+        damage = true
+    }
+
+    StartMonitoringVehicle()
+    StartMonitoringSpeed()
 end
 
 function StopMonitoring()
@@ -142,6 +163,7 @@ end)
 RegisterNetEvent('cali_driving_school:startTest')
 AddEventHandler('cali_driving_school:startTest', function()
     StartDrivingTest()
+    StartMonitoring()
     DrawCheckpoints()
 end)
 
@@ -156,6 +178,7 @@ function DrawCheckpoints()
         while currentCheckpoint <= #checkpoints do
             local playerCoords = GetEntityCoords(PlayerPedId())
             local checkpoint = checkpoints[currentCheckpoint]
+            currentZone = checkpoint.Zone
 
             DrawMarker(
                 checkpointMarker.Type,
@@ -187,7 +210,7 @@ function DrawCheckpoints()
             local distanceFromCheckpoint = #(playerCoords - vector3(checkpoint.Pos.x, checkpoint.Pos.y, checkpoint.Pos.z))
             if distanceFromCheckpoint <= _G.Config.Checkpoints.validationDistance then -- TODO: check if the vehicle is the school one
                 if checkpoint.Message then
-                    ESX.ShowNotification(checkpoint.Message .. string.format(" Limite : %skm/h", _G.Config.SpeedLimits[checkpoint.Zone]))
+                    ESX.ShowNotification(string.format(checkpoint.Message, _G.Config.SpeedLimits[checkpoint.Zone]))
                 end
 
                 currentCheckpoint = currentCheckpoint + 1
@@ -218,8 +241,6 @@ end
 
 -- Handles the player leaving the driving school vehicle
 function StartMonitoringVehicle()
-    monitoring.vehicle = true
-
     CreateThread(function()
         Wait(2000) -- Supposed to solve the message as soon as test starts bug
         while monitoring.vehicle do
@@ -240,6 +261,27 @@ function StartMonitoringVehicle()
             end
 
             Wait(5000)
+        end
+    end)
+end
+
+-- Handles the logic for monitoring player's speed
+function StartMonitoringSpeed()
+    CreateThread(function()
+        while monitoring.speed do
+            local speed = GetEntitySpeed(testVehicle) * 3.6 -- Convert from mph to kph
+
+            if speed > _G.Config.SpeedLimits[currentZone] then
+                driveErrors = driveErrors + 1
+                ESX.ShowNotification(string.format(_G.Messages.speeding, _G.Config.SpeedLimits[currentZone], driveErrors, _G.Config.MaxErrors))
+                if driveErrors >= 3 then
+                    EndDrivingTest(false, _G.Messages.tooManyErrors)
+                else
+                    Wait(_G.Config.MonitoringCooldown)
+                end
+            end
+
+            Wait(_G.Config.MonitoringInterval)
         end
     end)
 end
