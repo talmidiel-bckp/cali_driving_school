@@ -16,36 +16,17 @@ local monitoring = {
 
 -- Handles the logic for starting the driving test
 function StartDrivingTest()
-    local model = GetHashKey(_G.Config.Licenses[currentTest].vehicle)
-    local vehicleSpawnCoords = _G.Config.Vehicle.SpawnCoords
-
     -- TODO: check if a vehicle is blocking the spawn point
 
-    RequestModel(model)
-    while not HasModelLoaded(model) do -- wait for the model to load before going further
-        Wait(100)
-    end
 
     if testVehicle then
         DeleteVehicle(testVehicle)
     end
 
-    testVehicle = CreateVehicle(
-        model,
-        vehicleSpawnCoords.x,
-        vehicleSpawnCoords.y,
-        vehicleSpawnCoords.z,
-        vehicleSpawnCoords.heading,
-        _G.Config.Vehicle.isNetwork,
-        _G.Config.Vehicle.netMissionEntity
-    )
-    currentZone = 'Town'
-
-    math.randomseed(GetGameTimer())
-    SetVehicleNumberPlateText(testVehicle, _G.Config.Vehicle.numberPlate)
-    SetVehicleFuelLevel(testVehicle, 100.0)
+    SpawnVehicle()
     TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
-    SetModelAsNoLongerNeeded(model) -- free up some memory
+
+    currentZone = 'Town'
 end
 
 -- Handles the logic after the test is done
@@ -77,6 +58,33 @@ function EndDrivingTest(success, message)
     currentZone = nil
 
     StopMonitoring()
+end
+
+-- Handles vehicle spawning logic
+function SpawnVehicle()
+    local model = GetHashKey(_G.Config.Licenses[currentTest].vehicle)
+    local vehicleSpawnCoords = _G.Config.Vehicle.SpawnCoords
+
+    RequestModel(model)
+    while not HasModelLoaded(model) do -- wait for the model to load before going further
+        Wait(100)
+    end
+
+    testVehicle = CreateVehicle(
+        model,
+        vehicleSpawnCoords.x,
+        vehicleSpawnCoords.y,
+        vehicleSpawnCoords.z,
+        vehicleSpawnCoords.heading,
+        _G.Config.Vehicle.isNetwork,
+        _G.Config.Vehicle.netMissionEntity
+    )
+
+
+    math.randomseed(GetGameTimer()) -- seeding the random generator bafore calling math.random() from config
+    SetVehicleNumberPlateText(testVehicle, _G.Config.Vehicle.numberPlate)
+    SetVehicleFuelLevel(testVehicle, 100.0)
+    SetModelAsNoLongerNeeded(model)
 end
 
 function StartMonitoring()
