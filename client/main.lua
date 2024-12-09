@@ -4,8 +4,13 @@ local testVehicle = nil -- current driving school vehicle
 local outsideVehicleTime = 0 -- time spent outside the driving school vehicle (in seconds)
 local currentCheckpoint = 1
 local currentBlip = nil
-local isLastCheckPoint = false
 local ownedLicense = {}
+
+local monitoring = {
+    vehicle = false,
+    speed = false,
+    damage = false
+}
 
 -- Handles the logic for starting the driving test
 function StartDrivingTest()
@@ -38,7 +43,7 @@ function StartDrivingTest()
     SetVehicleFuelLevel(testVehicle, 100.0)
     TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
     SetModelAsNoLongerNeeded(model) -- free up some memory
-    CheckCurrentVehicle()
+    StartMonitoringVehicle()
 end
 
 -- Handles the logic after the test is done
@@ -59,8 +64,17 @@ function EndDrivingTest(success, message)
     testVehicle = nil
     outsideVehicleTime = 0
     currentCheckpoint = 1
-    LastCheckPoint = -1
     currentBlip = nil
+
+    StopMonitoring()
+end
+
+function StopMonitoring()
+    monitoring = {
+        vehicle = false,
+        speed = false,
+        damage = false
+    }
 end
 
 -- Generate the driving school's menu
@@ -191,7 +205,7 @@ function DrawCheckpoints()
         end
 
         local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-        isLastCheckPoint = true -- Stop the CheckCurrentVehicle thread.
+        monitoring.vehicle = false
 
         while currentVehicle == testVehicle do
             currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
@@ -203,10 +217,12 @@ function DrawCheckpoints()
 end
 
 -- Handles the player leaving the driving school vehicle
-function CheckCurrentVehicle()
+function StartMonitoringVehicle()
+    monitoring.vehicle = true
+
     CreateThread(function()
-        Wait(2000) -- Supposed to solve the mesage as soon as test starts bug
-        while currentTest and not isLastCheckPoint do
+        Wait(2000) -- Supposed to solve the message as soon as test starts bug
+        while monitoring.vehicle do
             local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
 
             if currentVehicle ~= testVehicle then
