@@ -154,7 +154,7 @@ _G.Config = {
                 Zone = 'Town'
             },
             {
-                Pos = {x = 237.758, y = -1411.740, z = 30.391},
+                Pos = {x = 240.758, y = -1413.740, z = 29.391},
                 Message = "Soretez du vehicule pour valider le test !",
                 Zone = 'Town'
             }
@@ -236,7 +236,7 @@ _G.Config = {
                 Zone = 'Town'
             },
             {
-                Pos = {x = 237.758, y = -1411.740, z = 30.391},
+                Pos = {x = 240.758, y = -1413.740, z = 29.391},
                 Message = "Soretez du vehicule pour valider le test !",
                 Zone = 'Town'
             }
@@ -318,7 +318,7 @@ _G.Config = {
                 Zone = 'Town'
             },
             {
-                Pos = {x = 237.758, y = -1411.740, z = 30.391},
+                Pos = {x = 240.758, y = -1413.740, z = 29.391},
                 Message = "Soretez du vehicule pour valider le test !",
                 Zone = 'Town'
             }
