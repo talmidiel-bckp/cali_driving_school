@@ -16,7 +16,18 @@ end)
 -- Give the license to the player in db
 RegisterNetEvent('cali_driving_school:addLicense')
 AddEventHandler('cali_driving_school:addLicense', function(license)
-    local source = source
+    local source = source -- TODO: remove this as it is redundant
 
-    TriggerEvent('esx_license:addLicense', source, license)
+    TriggerEvent('esx_license:addLicense', source, license, function()
+        TriggerEvent('esx_license:getLicenses', source, function(licenses)
+            TriggerClientEvent('cali_driving_school:getLicenses', source, licenses)
+        end)
+    end)
+end)
+
+-- Fetch the player's currently owned licenses from db upon login
+AddEventHandler('esx:playerLoaded', function(source)
+    TriggerEvent('esx_license:getLicenses', source, function(licenses)
+        TriggerClientEvent('cali_driving_school:getLicenses', source, licenses)
+    end)
 end)

@@ -5,6 +5,7 @@ local outsideVehicleTime = 0 -- time spent outside the driving school vehicle (i
 local currentCheckpoint = 1
 local currentBlip = nil
 local isLastCheckPoint = false
+local ownedLicense = {}
 
 -- Handles the logic for starting the driving test
 function StartDrivingTest()
@@ -74,9 +75,11 @@ function OpenLicenseMenu()
 
     -- dynamically generate the elements
     for key, value in pairs(_G.Config.Licenses) do
-        -- TODO: find a way to grey out the entry if player already has the license
-        -- maybe use disabled = true or unselectable = true
-        table.insert(elements, {title = value.menuName, description = value.price .. '$', price = value.price, key = key, order = value.order})
+        if ownedLicense[value.name] then
+            table.insert(elements, {title = value.menuName, description = _G.Messages.ownedLicense, order = value.order, disabled = true})
+        else
+            table.insert(elements, {title = value.menuName, description = value.price .. '$', price = value.price, key = key, order = value.order})
+        end
     end
 
     table.sort(elements, function(a, b)
@@ -114,6 +117,13 @@ function CreateCheckpointBlip(coords)
     SetBlipRoute(currentBlip, blipConfig.Route)
     SetBlipScale(currentBlip, blipConfig.Scale)
 end
+
+RegisterNetEvent('cali_driving_school:getLicenses')
+AddEventHandler('cali_driving_school:getLicenses', function(licenses)
+    for _, license in ipairs(licenses) do
+        ownedLicense[license.type] = true
+    end
+end)
 
 RegisterNetEvent('cali_driving_school:startTest')
 AddEventHandler('cali_driving_school:startTest', function()
