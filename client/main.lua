@@ -157,7 +157,7 @@ function DrawCheckpoints()
             local distanceFromCheckpoint = #(playerCoords - vector3(checkpoint.Pos.x, checkpoint.Pos.y, checkpoint.Pos.z))
             if distanceFromCheckpoint <= _G.Config.Checkpoints.validationDistance then -- TODO: check if the vehicle is the school one
                 if checkpoint.Message then
-                    ESX.ShowNotification(checkpoint.Message)
+                    ESX.ShowNotification(checkpoint.Message .. string.format(" Limite : %skm/h", _G.Config.SpeedLimits[checkpoint.Zone]))
                 end
 
                 currentCheckpoint = currentCheckpoint + 1
