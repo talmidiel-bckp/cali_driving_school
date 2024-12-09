@@ -14,10 +14,8 @@ local monitoring = {
     damage = false
 }
 
--- Handles the logic for starting the driving test
 function StartDrivingTest()
     -- TODO: check if a vehicle is blocking the spawn point
-
 
     if testVehicle then
         DeleteVehicle(testVehicle)
@@ -29,18 +27,13 @@ function StartDrivingTest()
     currentZone = 'Town'
 end
 
--- Handles the logic after the test is done
 function EndDrivingTest(success, message)
-    if success then
-        TriggerServerEvent('cali_driving_school:addLicense', _G.Config.Licenses[currentTest].name)
-    else
-        local schoolCoordinates = _G.Config.Vehicle.SpawnCoords
-        SetEntityCoords(PlayerPedId(), schoolCoordinates.x, schoolCoordinates.y, schoolCoordinates.z, false, false, false, true)
-    end
+    HandleTestResult(success, message)
+    CleanTestRessources()
+    StopMonitoring()
+end
 
-    ESX.ShowNotification(message)
-
-    -- Post test cleanup
+function CleanTestRessources()
     if testVehicle then
         DeleteVehicle(testVehicle)
         testVehicle = nil
@@ -56,11 +49,19 @@ function EndDrivingTest(success, message)
     currentBlip = nil
     driveErrors = 0
     currentZone = nil
-
-    StopMonitoring()
 end
 
--- Handles vehicle spawning logic
+function HandleTestResult(success, message)
+    if success then
+        TriggerServerEvent('cali_driving_school:addLicense', _G.Config.Licenses[currentTest].name)
+    else
+        local schoolCoordinates = _G.Config.Vehicle.SpawnCoords
+        SetEntityCoords(PlayerPedId(), schoolCoordinates.x, schoolCoordinates.y, schoolCoordinates.z, false, false, false, true)
+    end
+
+    ESX.ShowNotification(message)
+end
+
 function SpawnVehicle()
     local model = GetHashKey(_G.Config.Licenses[currentTest].vehicle)
     local vehicleSpawnCoords = _G.Config.Vehicle.SpawnCoords
