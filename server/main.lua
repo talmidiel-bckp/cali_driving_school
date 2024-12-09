@@ -12,3 +12,11 @@ ESX.RegisterServerCallback('cali_driving_school:playerHasEnoughMoney', function(
         callback(false)
     end
 end)
+
+-- Give the license to the player in db
+RegisterNetEvent('cali_driving_school:addLicense')
+AddEventHandler('cali_driving_school:addLicense', function(license)
+    local source = source
+
+    TriggerEvent('esx_license:addLicense', source, license)
+end)

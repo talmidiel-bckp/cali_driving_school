@@ -43,13 +43,16 @@ end
 -- Handles the logic after the test is done
 function EndDrivingTest(success, message)
     DeleteVehicle(testVehicle)
-    ESX.ShowNotification(message)
 
     if DoesBlipExist(currentBlip) then
         RemoveBlip(currentBlip)
     end
 
-    -- TODO: give license to player if success
+    if success then
+        TriggerServerEvent('cali_driving_school:addLicense', _G.Config.Licenses[currentTest].name)
+    end
+
+    ESX.ShowNotification(message)
 
     currentTest = nil
     testVehicle = nil
