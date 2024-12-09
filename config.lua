@@ -54,7 +54,7 @@ _G.Config = {
     },
 
     Checkpoints = {
-        validationDistance = 1.5,
+        validationDistance = 3.0,
 
         Marker = {
             Type = 25, -- MarkerTypeHorizontalCircleSkinny
@@ -85,7 +85,7 @@ _G.Config = {
             },
             {
                 Pos = {x = 181.687, y = -1396.153, z = 28.824},
-                Message = "Bien ! nous allons continuer tout droits. Attention, en ville la vitesse est limitée a 90km/h !",
+                Message = "Bien ! nous allons continuer tout droit. Attention, en ville la vitesse est limitée a %skm/h !",
                 Zone = 'Town'
             },
             {
@@ -94,7 +94,7 @@ _G.Config = {
                 Zone = 'Town'
             },
             {
-                Pos = {x = 459.560, y = -510.830, z = 27.797},
+                Pos = {x = 463.560, y = -510.830, z = 27.797},
                 Message = "Nous allons rentrer sur l'autoroute, la vitesse n'est pas limitée.",
                 Zone = 'Freeway'
             },

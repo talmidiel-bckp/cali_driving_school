@@ -169,6 +169,7 @@ function DrawCheckpoints()
                 end
 
                 -- TODO: check if last checkpoint, is a vehicle present on the spot
+                -- TODO: if last checkpoint, let the plater get out of the vehicle before finishing
             end
 
             Wait(0)
@@ -178,7 +179,7 @@ function DrawCheckpoints()
     end)
 end
 
--- Handles the player's leaving the driving school vehicle
+-- Handles the player leaving the driving school vehicle
 function CheckCurrentVehicle()
     CreateThread(function()
         Wait(2000) -- Supposed to solve the mesage as soon as test starts bug
