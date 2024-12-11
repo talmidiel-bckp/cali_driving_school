@@ -176,9 +176,6 @@ function OpenLicenseMenu()
                     currentTest = element.key
                     ESX.CloseContext()
                     TriggerEvent('cali_driving_school:startTest')
-
-                    Wait(2000) -- TODO: Move this to a more appropriate place
-                    ESX.ShowNotification(string.format(_G.Messages.startMessage, element.price))
                 else
                     ESX.ShowNotification(string.format(_G.Messages.notEnoughMoney, element.title, element.price))
                     ESX.CloseContext()
@@ -212,6 +209,8 @@ AddEventHandler('cali_driving_school:startTest', function()
         TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
         StartMonitoring()
         DrawCheckpoints()
+        Wait(1000) -- 1s delay to make it feel more "human"
+        ESX.ShowNotification(string.format(_G.Messages.startMessage, element.price))
     end)
 end)
 
@@ -265,7 +264,7 @@ function DrawCheckpoints()
             )
 
             local distanceFromCheckpoint = #(playerCoords - vector3(checkpoint.Pos.x, checkpoint.Pos.y, checkpoint.Pos.z))
-            if distanceFromCheckpoint <= _G.Config.Checkpoints.validationDistance then -- TODO: check if the vehicle is the school one
+            if distanceFromCheckpoint <= _G.Config.Checkpoints.validationDistance and outsideVehicleTime == 0 then
                 if checkpoint.Message then
                     ESX.ShowNotification(string.format(checkpoint.Message, _G.Config.SpeedLimits[checkpoint.Zone]))
                 end
