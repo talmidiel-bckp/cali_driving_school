@@ -7,6 +7,7 @@ local currentBlip = nil
 local ownedLicense = {}
 local driveErrors = 0
 local currentZone = nil
+local lastVehicleHealth = nil
 
 local monitoring = {
     vehicle = false,
@@ -44,10 +45,8 @@ function CleanTestRessources()
     end
 
     currentTest = nil
-    outsideVehicleTime = 0
     currentCheckpoint = 1
     currentBlip = nil
-    driveErrors = 0
     currentZone = nil
 end
 
@@ -97,6 +96,7 @@ function StartMonitoring()
 
     StartMonitoringVehicle()
     StartMonitoringSpeed()
+    StartMonitoringColision()
 end
 
 function StopMonitoring()
@@ -105,6 +105,18 @@ function StopMonitoring()
         speed = false,
         damage = false
     }
+
+    lastVehicleHealth = nil
+    outsideVehicleTime = 0
+    driveErrors = 0
+end
+
+function CheckErrorsCount()
+    if driveErrors >= _G.Config.MaxErrors then
+        EndDrivingTest(false, _G.Messages.tooManyErrors)
+    else
+        Wait(_G.Config.MonitoringCooldown)
+    end
 end
 
 -- Generate the driving school's menu
@@ -283,11 +295,26 @@ function StartMonitoringSpeed()
             if speed > _G.Config.SpeedLimits[currentZone] then
                 driveErrors = driveErrors + 1
                 ESX.ShowNotification(string.format(_G.Messages.speeding, _G.Config.SpeedLimits[currentZone], driveErrors, _G.Config.MaxErrors))
-                if driveErrors >= 3 then
-                    EndDrivingTest(false, _G.Messages.tooManyErrors)
-                else
-                    Wait(_G.Config.MonitoringCooldown)
-                end
+                CheckErrorsCount()
+            end
+
+            Wait(_G.Config.MonitoringInterval)
+        end
+    end)
+end
+
+function StartMonitoringColision()
+    lastVehicleHealth = GetEntityHealth(testVehicle)
+
+    CreateThread(function()
+        while monitoring.damage do
+            local health = GetEntityHealth(testVehicle)
+
+            if health < lastVehicleHealth then
+                driveErrors = driveErrors + 1
+                ESX.ShowNotification(string.format(_G.Messages.colision, driveErrors, _G.Config.MaxErrors))
+                lastVehicleHealth = health
+                CheckErrorsCount()
             end
 
             Wait(_G.Config.MonitoringInterval)

@@ -342,5 +342,6 @@ _G.Messages = {
     startMessage = "Sortez de l'auto école et prenez a droite",
     ownedLicense = 'Vous possedez déjà ce permis !',
     speeding = "Attention a votre vitesse ! pour rappella limite est de %skm/h. Erreurs : %s/%s", -- speedLimit, driveErrors, maxErrors
-    tooManyErrors = "vous avez fait trop d'erreurs. réessayez plus tard !"
+    tooManyErrors = "vous avez fait trop d'erreurs. réessayez plus tard !",
+    colision = "Attention ! vous avez abimé le véhicule de l'auto école. Erreurs : %s/%s" -- driveErrors, maxErrors
 }
