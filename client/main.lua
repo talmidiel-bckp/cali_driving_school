@@ -268,6 +268,8 @@ function StartMonitoringVehicle()
             local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
 
             if currentVehicle ~= testVehicle then
+                monitoring.speed, monitoring.damage = false, false -- pause monitoring in case player gets inside another vehicle.
+
                 if outsideVehicleTime >= 45 and outsideVehicleTime < 60 then
                     ESX.ShowNotification(string.format(_G.Messages.wrongVehicle2, 60 - outsideVehicleTime))
                 elseif outsideVehicleTime == 60 then
@@ -277,8 +279,12 @@ function StartMonitoringVehicle()
                 end
 
                 outsideVehicleTime = outsideVehicleTime + 5
-            else
+            elseif outsideVehicleTime > 0 then
                 outsideVehicleTime = 0
+                monitoring.speed, monitoring.damage = true, true
+
+                StartMonitoringSpeed()
+                StartMonitoringColision()
             end
 
             Wait(5000)
