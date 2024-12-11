@@ -16,12 +16,6 @@ local monitoring = {
     damage = false
 }
 
-function EndDrivingTest(success, message)
-    HandleTestResult(success, message)
-    CleanTestRessources()
-    StopMonitoring()
-end
-
 function CleanTestRessources()
     if testVehicle then
         DeleteVehicle(testVehicle)
@@ -38,7 +32,7 @@ function CleanTestRessources()
     currentZone = nil
 end
 
-function HandleTestResult(success, message)
+function HandleTestResult(success, callback)
     if success then
         TriggerServerEvent('cali_driving_school:addLicense', _G.Config.Licenses[currentTest].name)
     else
@@ -46,7 +40,9 @@ function HandleTestResult(success, message)
         SetEntityCoords(PlayerPedId(), schoolCoordinates.x, schoolCoordinates.y, schoolCoordinates.z, false, false, false, true)
     end
 
-    ESX.ShowNotification(message)
+    if callback then
+        callback()
+    end
 end
 
 function SpawnVehicle()
@@ -105,7 +101,7 @@ end
 
 function CheckErrorsCount()
     if driveErrors >= _G.Config.MaxErrors then
-        EndDrivingTest(false, _G.Messages.tooManyErrors)
+        TriggerEvent('cali_driving_school:endTest', false, _G.Messages.tooManyErrors)
     else
         Wait(_G.Config.MonitoringCooldown)
     end
@@ -219,6 +215,15 @@ AddEventHandler('cali_driving_school:startTest', function()
     end)
 end)
 
+RegisterNetEvent('cali_driving_school:endTest')
+AddEventHandler('cali_driving_school:endTest', function(success, message)
+    HandleTestResult(success, function()
+        CleanTestRessources()
+        ESX.ShowNotification(message)
+    end)
+    StopMonitoring()
+end)
+
 -- Draw the checkpoints markers, blips, and messages
 function DrawCheckpoints()
     local checkpoints = _G.Config.Checkpoints[currentTest]
@@ -287,7 +292,7 @@ function DrawCheckpoints()
             Wait(1000)
         end
 
-        EndDrivingTest(true, string.format(_G.Messages.testSucess, _G.Config.Licenses[currentTest].menuName))
+        TriggerEvent('cali_driving_school:endTest', true, string.format(_G.Messages.testSucess, _G.Config.Licenses[currentTest].menuName))
     end)
 end
 
@@ -304,7 +309,7 @@ function StartMonitoringVehicle()
                 if outsideVehicleTime >= 45 and outsideVehicleTime < 60 then
                     ESX.ShowNotification(string.format(_G.Messages.wrongVehicle2, 60 - outsideVehicleTime))
                 elseif outsideVehicleTime == 60 then
-                    EndDrivingTest(false, _G.Messages.monitorLeft)
+                    TriggerEvent('cali_driving_school:endTest', false, _G.Messages.monitorLeft)
                 else
                     ESX.ShowNotification(_G.Messages.wrongVehicle)
                 end
