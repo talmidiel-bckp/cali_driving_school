@@ -23,7 +23,7 @@ _G.Config = {
         Blip = {
             Sprite = 782, -- radar_test_car
             Color = 0, -- White
-            Display = 4 -- Main AND Mini map, non-sticky -- TODO: fix this stupid thing still being sticky
+            Display = 2 -- Main AND Mini map, non-sticky
         },
 
         Marker = {
@@ -80,7 +80,7 @@ _G.Config = {
         Blip = {
             Sprite = 9, -- radar_radius_blip
             Color = 60,  -- Yellow Orange
-            Display = 6, -- Main AND Mini map, sticky
+            Display = 8, -- Main AND Mini map, sticky
             Route = true, -- Show route to blip
             Scale = 0.2
         },
