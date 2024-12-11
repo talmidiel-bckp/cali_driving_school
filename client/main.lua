@@ -6,27 +6,15 @@ local currentCheckpoint = 1
 local currentBlip = nil
 local ownedLicense = {}
 local driveErrors = 0
-local currentZone = nil
+local currentZone = 'Town'
 local lastVehicleHealth = nil
+local closestVehicle = nil
 
 local monitoring = {
     vehicle = false,
     speed = false,
     damage = false
 }
-
-function StartDrivingTest()
-    -- TODO: check if a vehicle is blocking the spawn point
-
-    if testVehicle then
-        DeleteVehicle(testVehicle)
-    end
-
-    SpawnVehicle()
-    TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
-
-    currentZone = 'Town'
-end
 
 function EndDrivingTest(success, message)
     HandleTestResult(success, message)
@@ -64,6 +52,10 @@ end
 function SpawnVehicle()
     local model = GetHashKey(_G.Config.Licenses[currentTest].vehicle)
     local vehicleSpawnCoords = _G.Config.Vehicle.SpawnCoords
+
+    if testVehicle then
+        DeleteVehicle(testVehicle)
+    end
 
     RequestModel(model)
     while not HasModelLoaded(model) do -- wait for the model to load before going further
@@ -117,6 +109,42 @@ function CheckErrorsCount()
     else
         Wait(_G.Config.MonitoringCooldown)
     end
+end
+
+function IsVehicleBlockingSpawn()
+    local spawnCoords = _G.Config.Vehicle.SpawnCoords
+    local spawnRadius = 3.0
+    closestVehicle = GetClosestVehicle(spawnCoords.x, spawnCoords.y, spawnCoords.z, spawnRadius, 0, 71) -- 71 = bitmask for all vehicles
+
+    return DoesEntityExist(closestVehicle)
+end
+
+function WaitForClearSpawn(callback)
+    if not IsVehicleBlockingSpawn() then
+        callback()
+        return
+    end
+
+    local timePassed = 0
+
+    ESX.ShowNotification(string.format(_G.Messages.blockedSpawn, _G.Config.ImpoundDelay))
+
+    while timePassed < _G.Config.ImpoundDelay do
+        Wait(1000)
+        timePassed = timePassed + 1
+    end
+
+    if IsVehicleBlockingSpawn() then
+        DeleteVehicle(closestVehicle)
+        closestVehicle = nil
+        ESX.ShowNotification(string.format(_G.Messages.impound, _G.Config.testDelay.impound / 1000))
+        Wait(_G.Config.testDelay.impound)
+    else
+        ESX.ShowNotification(string.format(_G.Messages.clearSpawn, _G.Config.testDelay.movedVehicle / 1000))
+        Wait(_G.Config.testDelay.movedVehicle)
+    end
+
+    callback()
 end
 
 -- Generate the driving school's menu
@@ -183,9 +211,12 @@ end)
 
 RegisterNetEvent('cali_driving_school:startTest')
 AddEventHandler('cali_driving_school:startTest', function()
-    StartDrivingTest()
-    StartMonitoring()
-    DrawCheckpoints()
+    WaitForClearSpawn(function()
+        SpawnVehicle()
+        TaskWarpPedIntoVehicle(PlayerPedId(), testVehicle, -1)
+        StartMonitoring()
+        DrawCheckpoints()
+    end)
 end)
 
 -- Draw the checkpoints markers, blips, and messages

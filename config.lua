@@ -5,6 +5,11 @@ _G.Config = {
     MaxErrors = 3,
     MonitoringInterval = 1000, -- interval for monitoring speed and damage
     MonitoringCooldown = 3000, -- cooldown to let player reduce it's speed
+    ImpoundDelay = 30, -- Impound intervention time in seconds
+    testDelay = {
+        impound = 2000,
+        movedVehicle = 5000 -- waiting longer in case player is still in the vehicle
+    },
 
     SpeedLimits = {
         Town = 90,
@@ -332,7 +337,7 @@ _G.Config = {
 }
 
 _G.Messages = {
-    pedInteract = "appuyez sur [%s] pour parler au moniteur", -- touche d'interaction variable
+    pedInteract = "[%s] Parler au moniteur", -- touche d'interaction variable
     notEnoughMoney = "vous n'avez pas les moyens pour passer le permis : %s (%s$)",
     bankMessage = "auto école : %s.",
     wrongVehicle = "Veuillez retourner dans le vehicule de l'auto école pour poursuivre le test",
@@ -343,5 +348,8 @@ _G.Messages = {
     ownedLicense = 'Vous possedez déjà ce permis !',
     speeding = "Attention a votre vitesse ! pour rappella limite est de %skm/h. Erreurs : %s/%s", -- speedLimit, driveErrors, maxErrors
     tooManyErrors = "vous avez fait trop d'erreurs. réessayez plus tard !",
-    colision = "Attention ! vous avez abimé le véhicule de l'auto école. Erreurs : %s/%s" -- driveErrors, maxErrors
+    colision = "Attention ! vous avez abimé le véhicule de l'auto école. Erreurs : %s/%s", -- driveErrors, maxErrors
+    blockedSpawn = "un véhicule bloque le garage. Si c'est le votre déplacez le, sinon, la fourriére interviendras dans %s secondes", -- ImpoundDelay
+    impound = "la fourriére c'est occupée du vehicule génant, votre test démarre dans %s secondes !", -- testDelay.impound
+    clearSpawn = "le garage n'est plus bloqué, votre test démarre dans %s secondes", -- testDelay.movedVehicle
 }
