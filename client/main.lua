@@ -143,7 +143,6 @@ function WaitForClearSpawn(callback)
     callback()
 end
 
--- Generate the driving school's menu
 function OpenLicenseMenu()
     local elements = {
         {
@@ -169,7 +168,7 @@ function OpenLicenseMenu()
     ESX.OpenContext(
         'right',
         elements,
-        function(menu, element) -- action if an entry is selected
+        function(menu, element)
             -- return true and deduct the price from player's account if he have enough money
             ESX.TriggerServerCallback('cali_driving_school:playerHasEnoughMoney', function(playerHasEnoughMoney)
                 if playerHasEnoughMoney then
@@ -184,7 +183,6 @@ function OpenLicenseMenu()
         end)
 end
 
--- TODO: merge with driving school blip and maybe move to an utils file ?
 function CreateBlip(blipConfig, coords)
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
 
@@ -305,7 +303,6 @@ function DrawCheckpoints()
     end)
 end
 
--- Handles the player leaving the driving school vehicle
 function StartMonitoringVehicle()
     CreateThread(function()
         Wait(2000) -- Supposed to solve the message as soon as test starts bug
@@ -337,7 +334,6 @@ function StartMonitoringVehicle()
     end)
 end
 
--- Handles the logic for monitoring player's speed
 function StartMonitoringSpeed()
     CreateThread(function()
         while monitoring.speed do
@@ -376,7 +372,7 @@ end
 -- Create driving school origin marker
 CreateThread(function ()
     CreateBlip(_G.Config.DrivingSchool.Blip, _G.Config.DrivingSchool.Coordinates)
-    
+
     while true do
         Wait(0)
         local playerCoords = GetEntityCoords(PlayerPedId()) -- get current player coordinates
