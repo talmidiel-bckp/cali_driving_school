@@ -23,7 +23,9 @@ _G.Config = {
         Blip = {
             Sprite = 782, -- radar_test_car
             Color = 0, -- White
-            Display = 2 -- Main AND Mini map, non-sticky
+            Display = 2, -- Main AND Mini map, non-sticky
+            Route = false,
+            Scale = 1.0
         },
 
         Marker = {

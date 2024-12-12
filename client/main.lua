@@ -185,14 +185,20 @@ function OpenLicenseMenu()
 end
 
 -- TODO: merge with driving school blip and maybe move to an utils file ?
-function CreateCheckpointBlip(coords)
-    local blipConfig = _G.Config.Checkpoints.Blip
-    currentBlip = AddBlipForCoord(coords.x, coords.y, coords.z)
+function CreateBlip(blipConfig, coords)
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
 
-    SetBlipSprite(currentBlip, blipConfig.Sprite)
-    SetBlipColour(currentBlip, blipConfig.Color)
-    SetBlipRoute(currentBlip, blipConfig.Route)
-    SetBlipScale(currentBlip, blipConfig.Scale)
+    SetBlipSprite(blip, blipConfig.Sprite)
+    SetBlipColour(blip, blipConfig.Color)
+    SetBlipRoute(blip, blipConfig.Route)
+    SetBlipScale(blip, blipConfig.Scale)
+    SetBlipDisplay(blip, blipConfig.Display)
+
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString("Auto École")
+    EndTextCommandSetBlipName(blip)
+
+    return blip
 end
 
 RegisterNetEvent('cali_driving_school:getLicenses')
@@ -210,7 +216,7 @@ AddEventHandler('cali_driving_school:startTest', function()
         StartMonitoring()
         DrawCheckpoints()
         Wait(1000) -- 1s delay to make it feel more "human"
-        ESX.ShowNotification(string.format(_G.Messages.startMessage, element.price))
+        ESX.ShowNotification(_G.Messages.startMessage)
     end)
 end)
 
@@ -229,12 +235,11 @@ function DrawCheckpoints()
     local checkpointMarker = _G.Config.Checkpoints.Marker
 
     CreateThread(function()
-        CreateCheckpointBlip(checkpoints[currentCheckpoint].Pos)
+        CreateBlip(_G.Config.Checkpoints.Blip, checkpoints[currentCheckpoint].Pos)
 
         while currentCheckpoint <= #checkpoints do
             local playerCoords = GetEntityCoords(PlayerPedId())
             local checkpoint = checkpoints[currentCheckpoint]
-            currentZone = checkpoint.Zone
 
             DrawMarker(
                 checkpointMarker.Type,
@@ -274,7 +279,12 @@ function DrawCheckpoints()
 
                 RemoveBlip(currentBlip)
                 if currentCheckpoint <= #checkpoints then
-                    CreateCheckpointBlip(checkpoint.Pos)
+                    currentBlip = CreateBlip(_G.Config.Checkpoints.Blip, checkpoint.Pos)
+                end
+
+                if currentZone ~= checkpoint.zone then
+                    Wait(_G.Config.MonitoringCooldown) -- Let the player reduce it's speed between zones
+                    currentZone = checkpoint.Zone
                 end
 
                 -- TODO: check if last checkpoint, is a vehicle present on the spot
@@ -331,7 +341,7 @@ end
 function StartMonitoringSpeed()
     CreateThread(function()
         while monitoring.speed do
-            local speed = GetEntitySpeed(testVehicle) * 3.6 -- Convert from mph to kph
+            local speed = GetEntitySpeed(testVehicle) * 3.6 -- Convert to kph
 
             if speed > _G.Config.SpeedLimits[currentZone] then
                 driveErrors = driveErrors + 1
@@ -363,22 +373,10 @@ function StartMonitoringColision()
     end)
 end
 
--- Create driving school blip
-CreateThread(function ()
-    local blip = AddBlipForCoord(drivingSchoolPos.x, drivingSchoolPos.y, drivingSchoolPos.z)
-    local drivingSchoolBlip = _G.Config.DrivingSchool.Blip
-
-    SetBlipSprite(blip, drivingSchoolBlip.Sprite)
-    SetBlipColour(blip, drivingSchoolBlip.Color)
-    SetBlipDisplay(blip, drivingSchoolBlip.Display)
-
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString("Auto École")
-    EndTextCommandSetBlipName(blip)
-end)
-
 -- Create driving school origin marker
 CreateThread(function ()
+    CreateBlip(_G.Config.DrivingSchool.Blip, _G.Config.DrivingSchool.Coordinates)
+    
     while true do
         Wait(0)
         local playerCoords = GetEntityCoords(PlayerPedId()) -- get current player coordinates
