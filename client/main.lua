@@ -199,6 +199,41 @@ function CreateBlip(blipConfig, coords)
     return blip
 end
 
+function HasEnteredMarker(checkpoint)
+    local playerCoords = GetEntityCoords(PlayerPedId())
+    local distanceFromCheckpoint = #(playerCoords - vector3(checkpoint.Pos.x, checkpoint.Pos.y, checkpoint.Pos.z))
+
+    return distanceFromCheckpoint <= _G.Config.Checkpoints.validationDistance
+end
+
+function SetupNextCheckpoint(lastCheckpoint, checkpoints)
+    if lastCheckpoint.Message then
+        ESX.ShowNotification(string.format(lastCheckpoint.Message, _G.Config.SpeedLimits[lastCheckpoint.Zone]))
+    end
+
+    currentZone = lastCheckpoint.Zone
+    currentCheckpoint = currentCheckpoint + 1
+
+    RemoveBlip(currentBlip)
+    if currentCheckpoint <= #checkpoints then
+        currentBlip = CreateBlip(_G.Config.Checkpoints.Blip, checkpoints[currentCheckpoint].Pos)
+    end
+end
+
+function WaitForPlayerLeavingVehicle(callback)
+    local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+    monitoring.vehicle = false
+
+    while currentVehicle == testVehicle do
+        currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+        Wait(1000)
+    end
+
+    if callback then
+        callback()
+    end
+end
+
 RegisterNetEvent('cali_driving_school:getLicenses')
 AddEventHandler('cali_driving_school:getLicenses', function(licenses)
     for _, license in ipairs(licenses) do
@@ -227,7 +262,6 @@ AddEventHandler('cali_driving_school:endTest', function(success, message)
     StopMonitoring()
 end)
 
--- Draw the checkpoints markers, blips, and messages
 function DrawCheckpoints()
     local checkpoints = _G.Config.Checkpoints[currentTest]
     local checkpointMarker = _G.Config.Checkpoints.Marker
@@ -235,11 +269,9 @@ function DrawCheckpoints()
     CreateThread(function()
         currentBlip = CreateBlip(_G.Config.Checkpoints.Blip, checkpoints[currentCheckpoint].Pos)
 
-        while currentCheckpoint <= #checkpoints do
-            local playerCoords = GetEntityCoords(PlayerPedId())
+        while currentCheckpoint <= #checkpoints and currentTest do
             local checkpoint = checkpoints[currentCheckpoint]
-            lastZone = currentZone
-            currentZone = checkpoint.Zone
+            local isInsideTestVehicle = outsideVehicleTime == 0
 
             DrawMarker(
                 checkpointMarker.Type,
@@ -268,33 +300,18 @@ function DrawCheckpoints()
                 checkpointMarker.DrawOnEnts
             )
 
-            local distanceFromCheckpoint = #(playerCoords - vector3(checkpoint.Pos.x, checkpoint.Pos.y, checkpoint.Pos.z))
-            if distanceFromCheckpoint <= _G.Config.Checkpoints.validationDistance and outsideVehicleTime == 0 then
-                if checkpoint.Message then
-                    ESX.ShowNotification(string.format(checkpoint.Message, _G.Config.SpeedLimits[checkpoint.Zone]))
-                end
-
-                currentCheckpoint = currentCheckpoint + 1
-                checkpoint = checkpoints[currentCheckpoint]
-
-                RemoveBlip(currentBlip)
-                if currentCheckpoint <= #checkpoints then
-                    currentBlip = CreateBlip(_G.Config.Checkpoints.Blip, checkpoint.Pos)
-                end
+            if HasEnteredMarker(checkpoint) and isInsideTestVehicle then
+                SetupNextCheckpoint(checkpoint, checkpoints)
             end
 
             Wait(0)
         end
 
-        local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-        monitoring.vehicle = false
+        if not currentTest then return end -- dont trigger the success if test failed
 
-        while currentVehicle == testVehicle do
-            currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-            Wait(1000)
-        end
-
-        TriggerEvent('cali_driving_school:endTest', true, string.format(_G.Messages.testSucess, _G.Config.Licenses[currentTest].menuName))
+        WaitForPlayerLeavingVehicle(function()
+            TriggerEvent('cali_driving_school:endTest', true, string.format(_G.Messages.testSucess, _G.Config.Licenses[currentTest].menuName))
+        end)
     end)
 end
 
