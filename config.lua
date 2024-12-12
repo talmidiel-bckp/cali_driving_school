@@ -6,6 +6,9 @@ _G.Config = {
     MonitoringInterval = 1000, -- interval for monitoring speed and damage
     MonitoringCooldown = 3000, -- cooldown to let player reduce it's speed
     ImpoundDelay = 30, -- Impound intervention time in seconds
+    OutsideVehicleCooldown = 5000,
+    MaxOutsideVehicleTime = 60, -- time allowed outside of school vehicle in seconds
+
     testDelay = {
         impound = 2000,
         movedVehicle = 5000 -- waiting longer in case player is still in the vehicle
@@ -60,7 +63,8 @@ _G.Config = {
         SpawnCoords = {x = 223.068, y = -1387.859, z = 30.358, heading = 269.0},
         isNetwork = true, -- avoid other players seeing someone floating
         netMissionEntity = false, -- no need to keep the vehicle across multiple sessions
-        numberPlate = string.format("ECOL%s", math.random(1000, 9999))
+        numberPlate = string.format("ECOL%s", math.random(1000, 9999)),
+        SpawnRadius = 3.0
     },
 
     Checkpoints = {
@@ -289,13 +293,13 @@ _G.Config = {
 }
 
 _G.Messages = {
-    pedInteract = "[%s] Parler au moniteur", -- touche d'interaction variable
-    notEnoughMoney = "vous n'avez pas les moyens pour passer le permis : %s (%s$)",
-    bankMessage = "auto école : %s.",
+    pedInteract = "[%s] Parler au moniteur", -- InteractKey.name
+    notEnoughMoney = "vous n'avez pas les moyens pour passer le permis : %s (%s$)", -- Licenses[key].menuName, Licenses[key].price
+    bankMessage = "auto école : %s.", -- Licenses[key].price
     wrongVehicle = "Veuillez retourner dans le vehicule de l'auto école pour poursuivre le test",
-    wrongVehicle2 = "le moniteur partiras sans vous dans %s secondes",
+    wrongVehicle2 = "le moniteur partiras sans vous dans %s secondes", -- MaxOutsideVehicleTime - outsideVehicleTime
     monitorLeft = "le moniteur est rentré sans vous !",
-    testSucess = "Félicitations, vous avez réussi votre %s",
+    testSucess = "Félicitations, vous avez réussi votre %s", -- Licenses[key].menuName
     startMessage = "Sortez de l'auto école et prenez a droite",
     ownedLicense = 'Vous possedez déjà ce permis !',
     speeding = "Attention a votre vitesse ! pour rappella limite est de %skm/h. Erreurs : %s/%s", -- speedLimit, driveErrors, maxErrors

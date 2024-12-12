@@ -109,8 +109,7 @@ end
 
 function IsVehicleBlockingSpawn()
     local spawnCoords = _G.Config.Vehicle.SpawnCoords
-    local spawnRadius = 3.0
-    closestVehicle = GetClosestVehicle(spawnCoords.x, spawnCoords.y, spawnCoords.z, spawnRadius, 0, 71) -- 71 = bitmask for all vehicles
+    closestVehicle = GetClosestVehicle(spawnCoords.x, spawnCoords.y, spawnCoords.z, _G.Config.Vehicle.SpawnRadius, 0, 71) -- 71 = bitmask for all vehicles
 
     return DoesEntityExist(closestVehicle)
 end
@@ -133,10 +132,10 @@ function WaitForClearSpawn(callback)
     if IsVehicleBlockingSpawn() then
         DeleteVehicle(closestVehicle)
         closestVehicle = nil
-        ESX.ShowNotification(string.format(_G.Messages.impound, _G.Config.testDelay.impound / 1000))
+        ESX.ShowNotification(string.format(_G.Messages.impound, _G.Config.testDelay.impound / 1000)) -- ms to s
         Wait(_G.Config.testDelay.impound)
     else
-        ESX.ShowNotification(string.format(_G.Messages.clearSpawn, _G.Config.testDelay.movedVehicle / 1000))
+        ESX.ShowNotification(string.format(_G.Messages.clearSpawn, _G.Config.testDelay.movedVehicle / 1000)) -- ms to s
         Wait(_G.Config.testDelay.movedVehicle)
     end
 
@@ -162,7 +161,7 @@ function OpenLicenseMenu()
     end
 
     table.sort(elements, function(a, b)
-        return a.order < b.order
+        return a.order < b.order -- sort elements since pairs() is random
     end)
 
     ESX.OpenContext(
@@ -284,8 +283,6 @@ function DrawCheckpoints()
                     Wait(_G.Config.MonitoringCooldown) -- Let the player reduce it's speed between zones
                     currentZone = checkpoint.Zone
                 end
-
-                -- TODO: check if last checkpoint, is a vehicle present on the spot
             end
 
             Wait(0)
@@ -306,21 +303,23 @@ end
 function StartMonitoringVehicle()
     CreateThread(function()
         Wait(2000) -- Supposed to solve the message as soon as test starts bug
+        local maxTime = _G.Config.MaxOutsideVehicleTime
+
         while monitoring.vehicle do
             local currentVehicle = GetVehiclePedIsIn(PlayerPedId(), false)
 
             if currentVehicle ~= testVehicle then
                 monitoring.speed, monitoring.damage = false, false -- pause monitoring in case player gets inside another vehicle.
 
-                if outsideVehicleTime >= 45 and outsideVehicleTime < 60 then
-                    ESX.ShowNotification(string.format(_G.Messages.wrongVehicle2, 60 - outsideVehicleTime))
-                elseif outsideVehicleTime == 60 then
+                if outsideVehicleTime >= maxTime then
                     TriggerEvent('cali_driving_school:endTest', false, _G.Messages.monitorLeft)
+                elseif outsideVehicleTime >= (maxTime * 0.75) then
+                    ESX.ShowNotification(string.format(_G.Messages.wrongVehicle2, maxTime - outsideVehicleTime))
                 else
                     ESX.ShowNotification(_G.Messages.wrongVehicle)
                 end
 
-                outsideVehicleTime = outsideVehicleTime + 5
+                outsideVehicleTime = outsideVehicleTime + (_G.Config.OutsideVehicleCooldown / 1000) -- ms to s
             elseif outsideVehicleTime > 0 then
                 outsideVehicleTime = 0
                 monitoring.speed, monitoring.damage = true, true
@@ -329,7 +328,7 @@ function StartMonitoringVehicle()
                 StartMonitoringColision()
             end
 
-            Wait(5000)
+            Wait(_G.Config.OutsideVehicleCooldown)
         end
     end)
 end
@@ -375,8 +374,8 @@ CreateThread(function ()
 
     while true do
         Wait(0)
-        local playerCoords = GetEntityCoords(PlayerPedId()) -- get current player coordinates
-        local distanceFromSchool = #(playerCoords - vector3(drivingSchoolPos.x, drivingSchoolPos.y, drivingSchoolPos.z)) -- get distance from marker
+        local playerCoords = GetEntityCoords(PlayerPedId())
+        local distanceFromSchool = #(playerCoords - vector3(drivingSchoolPos.x, drivingSchoolPos.y, drivingSchoolPos.z))
 
         if distanceFromSchool < _G.Config.DrawDistance then
             local drivingSchoolMarker =  _G.Config.DrivingSchool.Marker
