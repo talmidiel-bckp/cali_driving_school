@@ -232,7 +232,7 @@ function DrawCheckpoints()
     local checkpointMarker = _G.Config.Checkpoints.Marker
 
     CreateThread(function()
-        CreateBlip(_G.Config.Checkpoints.Blip, checkpoints[currentCheckpoint].Pos)
+        currentBlip = CreateBlip(_G.Config.Checkpoints.Blip, checkpoints[currentCheckpoint].Pos)
 
         while currentCheckpoint <= #checkpoints do
             local playerCoords = GetEntityCoords(PlayerPedId())
@@ -277,11 +277,11 @@ function DrawCheckpoints()
                 RemoveBlip(currentBlip)
                 if currentCheckpoint <= #checkpoints then
                     currentBlip = CreateBlip(_G.Config.Checkpoints.Blip, checkpoint.Pos)
-                end
 
-                if currentZone ~= checkpoint.zone then
-                    Wait(_G.Config.MonitoringCooldown) -- Let the player reduce it's speed between zones
-                    currentZone = checkpoint.Zone
+                    if currentZone ~= checkpoint.zone then
+                        Wait(_G.Config.MonitoringCooldown) -- Let the player reduce it's speed between zones
+                        currentZone = checkpoint.Zone
+                    end
                 end
             end
 
