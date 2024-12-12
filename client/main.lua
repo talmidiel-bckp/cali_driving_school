@@ -133,10 +133,10 @@ function WaitForClearSpawn(callback)
     if IsVehicleBlockingSpawn() then
         DeleteVehicle(closestVehicle)
         closestVehicle = nil
-        ESX.ShowNotification(string.format(_G.Messages.impound, _G.Config.testDelay.impound / 1000)) -- ms to s
+        ESX.ShowNotification(string.format(_G.Messages.impound, math.floor(_G.Config.testDelay.impound / 1000))) -- ms to s
         Wait(_G.Config.testDelay.impound)
     else
-        ESX.ShowNotification(string.format(_G.Messages.clearSpawn, _G.Config.testDelay.movedVehicle / 1000)) -- ms to s
+        ESX.ShowNotification(string.format(_G.Messages.clearSpawn, math.floor(_G.Config.testDelay.movedVehicle / 1000))) -- ms to s
         Wait(_G.Config.testDelay.movedVehicle)
     end
 
@@ -334,7 +334,7 @@ function StartMonitoringVehicle()
                     ESX.ShowNotification(_G.Messages.wrongVehicle)
                 end
 
-                outsideVehicleTime = outsideVehicleTime + (_G.Config.OutsideVehicleCooldown / 1000) -- ms to s
+                outsideVehicleTime = outsideVehicleTime + math.floor(_G.Config.OutsideVehicleCooldown / 1000) -- ms to s
             elseif outsideVehicleTime > 0 then
                 outsideVehicleTime = 0
                 monitoring.speed, monitoring.damage = true, true
