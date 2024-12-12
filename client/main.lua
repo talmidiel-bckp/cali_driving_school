@@ -7,6 +7,7 @@ local currentBlip = nil
 local ownedLicense = {}
 local driveErrors = 0
 local currentZone = 'Town'
+local lastZone = 'Town'
 local lastVehicleHealth = nil
 local closestVehicle = nil
 
@@ -29,7 +30,7 @@ function CleanTestRessources()
     currentTest = nil
     currentCheckpoint = 1
     currentBlip = nil
-    currentZone = nil
+    currentZone = 'Town'
 end
 
 function HandleTestResult(success, callback)
@@ -237,6 +238,8 @@ function DrawCheckpoints()
         while currentCheckpoint <= #checkpoints do
             local playerCoords = GetEntityCoords(PlayerPedId())
             local checkpoint = checkpoints[currentCheckpoint]
+            lastZone = currentZone
+            currentZone = checkpoint.Zone
 
             DrawMarker(
                 checkpointMarker.Type,
@@ -277,11 +280,6 @@ function DrawCheckpoints()
                 RemoveBlip(currentBlip)
                 if currentCheckpoint <= #checkpoints then
                     currentBlip = CreateBlip(_G.Config.Checkpoints.Blip, checkpoint.Pos)
-
-                    if currentZone ~= checkpoint.zone then
-                        Wait(_G.Config.MonitoringCooldown) -- Let the player reduce it's speed between zones
-                        currentZone = checkpoint.Zone
-                    end
                 end
             end
 
@@ -336,6 +334,10 @@ end
 function StartMonitoringSpeed()
     CreateThread(function()
         while monitoring.speed do
+            if lastZone ~= currentZone then
+                Wait(_G.Config.MonitoringCooldown) -- let player reduce its speed between zone changes
+            end
+
             local speed = GetEntitySpeed(testVehicle) * 3.6 -- Convert to kph
 
             if speed > _G.Config.SpeedLimits[currentZone] then
