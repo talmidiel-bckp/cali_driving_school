@@ -68,7 +68,7 @@ _G.Config = {
     },
 
     Checkpoints = {
-        validationDistance = 3.0,
+        validationDistance = 4.0,
 
         Marker = {
             Type = 25, -- MarkerTypeHorizontalCircleSkinny
@@ -97,7 +97,6 @@ _G.Config = {
                 Message = "Insérez vous sur la voie de droite, puis tournez a droite. Limite : %skm/h",
                 Zone = 'Town'
             },
-            --[[
             {
                 Pos = {x = 181.687, y = -1396.153, z = 28.824},
                 Message = "Bien ! nous allons continuer tout droit. Attention, en ville la vitesse est limitée ! Limite : %skm/h",
@@ -158,7 +157,6 @@ _G.Config = {
                 Message = "Tournez a droite. Limite : %skm/h",
                 Zone = 'Town'
             },
-            --]]
             {
                 Pos = {x = 193.081, y = -1423.674, z = 29.161},
                 Message = "Faites demi-tour un peu plus loin avant de rentrez dans l'auto école. Limite : %skm/h",
@@ -212,7 +210,7 @@ _G.Config = {
                 Zone = 'Town'
             },
             {
-                Pos = {x = 1518.975, y = -1708.074, z = 34.907},
+                Pos = {x = 1158.975, y = -1708.074, z = 34.907},
                 Message = "Continuez tous droit jusqu'a l'auto école. Limite : %skm/h",
                 Zone = 'Town'
             },
@@ -236,11 +234,6 @@ _G.Config = {
             {
                 Pos = {x = 99.494, y = -1457.907, z = 28.774},
                 Message = "Bien ! Nous allons continuer tout droit jusqu'a l'aeroport. Limite : %skm/h",
-                Zone = 'Town'
-            },
-            {
-                Pos = {x = 218.716, y = -1090.588, z = 28.858},
-                Message = "Attention ce carrefour est trés fréquenté ! Limite : %skm/h",
                 Zone = 'Town'
             },
             {
@@ -274,8 +267,8 @@ _G.Config = {
                 Zone = 'Town'
             },
             {
-                Pos = {x = 446.452, y = 1671.586, z = 28.723},
-                Message = "Tournez a gauche, Ouis continuez tout droit jusqu'a l'auto école. Limite : %skm/h",
+                Pos = {x = 446.452, y = -1671.586, z = 28.723},
+                Message = "Tournez a gauche, Puis continuez tout droit jusqu'a l'auto école. Limite : %skm/h",
                 Zone = 'Town'
             },
             {
